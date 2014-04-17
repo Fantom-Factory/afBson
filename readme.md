@@ -1,6 +1,6 @@
 # Bson
 
-`Bson` is a [Fantom](http://fantom.org/) library for ...
+A BSON specification implementation for [Fantom](http://fantom.org/).
 
 
 
@@ -86,7 +86,7 @@ The main `BsonReader` and `BsonWriter` classes (de)serialise BSON objects to and
 
 Note that the deprecated constructs `UNDEFINED`, `DB_POINTER` and `SYMBOL` are ignored and have no Fantom representation.
 
-> **CAUTION:** `INTEGER_32` values will be read as `Int values.
+> **CAUTION:** `INTEGER_32` values will be read as `Int` values.
 If you then write its containing document, the storage type will be converted to `INTEGER_64`.
 
 This is only of concern if other, non Fantom drivers, are writing to the database.
