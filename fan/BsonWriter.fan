@@ -11,6 +11,7 @@ class BsonWriter {
 	private OutStream	out
 	
 	** Creates a 'BsonWriter', wrapping the given 'OutSteam'
+	** As per the BSON spec, the stream's endian is to 'little'.
 	new make(OutStream out) {
 		this.out = out
 		this.out.endian = Endian.little
@@ -26,12 +27,13 @@ class BsonWriter {
 		_writeObject(object, BsonBasicTypeWriter(null)).bytesWritten
 	}
 	
-	** Writes a 'null' terminated string to the 'OutStream'.
+	** Writes a 'null' terminated BSON string to 'OutStream'.
 	Void writeCString(Str cstr) {
 		BsonBasicTypeWriter(out).writeCString(cstr)
 	}
 
-	** Writes a 32 bit integer value to the 'OutStream'.
+	** Writes a 32 bit integer value to 'OutStream'.
+	** Unlike storing 'Ints' in a Document, this method *will* write an actual 'INTEGER_32'. 
 	Void writeInteger32(Int int32) {
 		BsonBasicTypeWriter(out).writeInteger32(int32)
 	}

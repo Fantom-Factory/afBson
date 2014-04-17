@@ -12,21 +12,90 @@ Install 'Bson' with the Fantom Repository Manager ( [fanr]`http://fantom.org/doc
 
 To use in a [Fantom]`http://fantom.org/` project, add a dependency to 'build.fan':
 
-  depends = ["sys 1.0", ..., "afBson 0+"]
+  depends = ["sys 1.0", ..., "afBson 1.0"]
 
 
 
 Quick Start [#quickStart]
 *************************
+1). Create a text file called 'Example.fan':
 pre>
-  Example here
+using afBson
+
+class Example {
+
+  Void main() {
+    buf := Buf()
+
+    documentIn := [
+      "_id"  : ObjectId(),
+      "name"  : "Dave",
+      "age"  : "42"
+    ]
+
+    // serialise BSON to a stream
+    BsonWriter(buf.out).writeObject(documentIn)
+
+    // deserialise BSOM from a stream
+    documentOut := BsonReader(buf.flip.in).readDocument
+
+    echo(documentOut)
+  }
+}
 <pre
+
+2). Run 'Example.fan' as a Fantom script from the command line:
+pre>
+C:\> fan Example.fan
+
+[_id:53503531a8000b8b44000001, name:Dave, age:42]
+<pre
+
+
+
+Usage [#usage]
+**************
+'Bson' is an implementation of the [BSON specification]`http://bsonspec.org/spec.html` complete with serialisation and deserialisation.
+
+'Bson' was created to support the Alien-Factory MongoDB Driver library.
+
+The main `BsonReader` and `BsonWriter` classes (de)serialise BSON objects to and from Fantom using the following mapping:
+
+pre>
+BSON            Fantom
+---------------------------------
+DOUBLE       ->    sys::Float
+STRING       ->    sys::Str
+DOCUMENT     ->    sys::Map
+ARRAY        ->    sys::List
+BINARY       -> afBson::Binary
+OBJECT_ID    -> afBson::ObjectId
+BOOLEAN      ->    sys::Bool
+DATE         ->    sys::DateTime
+NULL         ->         null
+REGEX        ->    sys::Regex
+CODE         -> afBson::Code
+CODE_W_SCOPE -> afBson::Code
+TIMESTAMP    -> afBson::Timestamp
+INTEGER_64   ->    sys::Int
+MIN_KEY      -> afBson::MinKey
+MAX_KEY      -> afBson::MaxKey
+<pre
+
+Note that the deprecated constructs 'UNDEFINED', 'DB_POINTER' and 'SYMBOL' are ignored and have no Fantom representation.
+
+> **CAUTION:** 'INTEGER_32' values will be read as [Int]`sys::Int` values.
+If you then write its containing document, the storage type will be converted to 'INTEGER_64'.
+
+This is only of concern if other, non Fantom drivers, are writing to the database.
+
+The Alien-Factoy BSON library was inspired by [fantomongo]`https://bitbucket.org/liamstask/fantomongo` by Liam Staskawicz.
 
 
 
 Release Notes [#releaseNotes]
 *****************************
 
-v0.0.2 [#v0.0.2]
+v1.0.0 [#v1.0.]
 ----------------
- - New: Preview Release 
+ - New: Initial Release.
