@@ -6,6 +6,7 @@ class BsonReader {
 	private InStream in
 
 	** Creates a 'BsonReader', wrapping the given 'InSteam'.
+	** As per the BSON spec, the stream's endian is to 'little'.
 	new make(InStream in) {
 		this.in = in
 		this.in.endian = Endian.little
@@ -19,6 +20,11 @@ class BsonReader {
 	** Reads a BSON String from the underlying 'InStream'.
 	Str readString() {
 		_readString(BsonBasicTypeReader(in))
+	}
+
+	** Reads a (null terminated) BSON String from the underlying 'InStream'.
+	Str readCString() {
+		_readCString(BsonBasicTypeReader(in))
 	}
 
 	** Reads a BSON Document from the underlying 'InStream'.
@@ -175,6 +181,10 @@ class BsonReader {
 	
 	private Str _readString(BsonBasicTypeReader reader) {
 		reader.readString
+	}
+	
+	private Str _readCString(BsonBasicTypeReader reader) {
+		reader.readCString
 	}
 	
 	private Obj?[] _readArray(BsonBasicTypeReader reader) {
