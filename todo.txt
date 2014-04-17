@@ -1,0 +1,12 @@
+
+For 1.0.0
+=========
+
+add to http://bsonspec.org/implementations.html
+
+regex db tests
+
+
+For Future
+==========
+
