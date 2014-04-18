@@ -2,6 +2,7 @@
 ** (BSON Type) - 
 ** 'MinKey' is *less than* any other value of any type. 
 ** This can be useful for always returning certain documents first (or last). 
+@Serializable
 const class MinKey { 
 
 	@NoDoc
@@ -23,6 +24,7 @@ const class MinKey {
 ** (BSON Type) - 
 ** 'MaxKey' is *greater than* any other value of any type. 
 ** This can be useful for always returning certain documents last (or first). 
+@Serializable
 const class MaxKey {
 	@NoDoc
 	override Str toStr() {
