@@ -12,7 +12,7 @@ internal class Example {
 		]
 
 		// serialise BSON to a stream
-		BsonWriter(buf.out).writeObject(documentIn)
+		BsonWriter(buf.out).writeDocument(documentIn)
 		
 		// deserialise BSOM from a stream
 		documentOut := BsonReader(buf.flip.in).readDocument
