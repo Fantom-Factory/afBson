@@ -9,7 +9,7 @@ internal class TestSerialisation : BsonTest {
 	Void testBsonSerialisation() {
 		b := Buf()
 
-		BsonWriter(b.out).writeObject(bsonValueMap)
+		BsonWriter(b.out).writeDocument(bsonValueMap)
 		doc := BsonReader(b.flip.in).readDocument
 		
 		verifyBsonValueMap(doc)
@@ -26,7 +26,7 @@ internal class TestSerialisation : BsonTest {
 	
 	Void testBadDocName() {
 		verifyErrMsg(ArgErr#, ErrMsgs.bsonType_unknownNameType(666)) {
-			BsonWriter(Buf().out).writeObject([666:"ever"])
+			BsonWriter(Buf().out).writeDocument([666:"ever"])
 		}		
 	}
 	

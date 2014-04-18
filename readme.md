@@ -40,7 +40,7 @@ Full API & fandocs are available on the [status302 repository](http://repo.statu
         ]
 
         // serialise BSON to a stream
-        BsonWriter(buf.out).writeObject(documentIn)
+        BsonWriter(buf.out).writeDocument(documentIn)
 
         // deserialise BSOM from a stream
         documentOut := BsonReader(buf.flip.in).readDocument

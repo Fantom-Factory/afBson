@@ -8,7 +8,10 @@
 class BsonWriter {
 	private static const Log log	:= Utils.getLog(BsonReader#)
 
-	private OutStream	out
+	** The underlying 'OutStream'.
+	OutStream out {
+		private set
+	}
 	
 	** Creates a 'BsonWriter', wrapping the given 'OutSteam'
 	** As per the BSON spec, the stream's endian is to 'little'.
@@ -17,15 +20,16 @@ class BsonWriter {
 		this.out.endian = Endian.little
 	}
 	
-	** Serialises the given BSON object to the underlying 'OutStream'.
-	This writeObject(Obj? object) {
-		_writeObject(object, BsonBasicTypeWriter(out))
+	** Serialises the given BSON Document to the underlying 'OutStream'.
+	This writeDocument(Obj:Obj? document) {
+		_writeObject(document, BsonBasicTypeWriter(out))
 		return this
 	}
 
-	** Calculates the size (in bytes) of the given BSON object should it be serialised.
-	Int sizeObject(Obj? object) {
-		_writeObject(object, BsonBasicTypeWriter(null)).bytesWritten
+	** Calculates the size (in bytes) of the given BSON Document should it be serialised.
+	** Nothing is written to the 'OutStream'.
+	Int sizeObject(Obj:Obj? document) {
+		_writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
 	}
 	
 	** Writes a 'null' terminated BSON string to 'OutStream'.
@@ -38,6 +42,12 @@ class BsonWriter {
 	** Unlike storing 'Ints' in a Document, this method *will* write an actual 'INTEGER_32'. 
 	This writeInteger32(Int int32) {
 		BsonBasicTypeWriter(out).writeInteger32(int32)
+		return this
+	}
+
+	** Writes a 64 bit integer value to 'OutStream'.
+	This writeInteger64(Int int64) {
+		BsonBasicTypeWriter(out).writeInteger64(int64)
 		return this
 	}
 
