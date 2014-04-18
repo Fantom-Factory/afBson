@@ -18,8 +18,9 @@ class BsonWriter {
 	}
 	
 	** Serialises the given BSON object to the underlying 'OutStream'.
-	Void writeObject(Obj? object) {
+	This writeObject(Obj? object) {
 		_writeObject(object, BsonBasicTypeWriter(out))
+		return this
 	}
 
 	** Calculates the size (in bytes) of the given BSON object should it be serialised.
@@ -28,14 +29,22 @@ class BsonWriter {
 	}
 	
 	** Writes a 'null' terminated BSON string to 'OutStream'.
-	Void writeCString(Str cstr) {
+	This writeCString(Str cstr) {
 		BsonBasicTypeWriter(out).writeCString(cstr)
+		return this
 	}
 
 	** Writes a 32 bit integer value to 'OutStream'.
 	** Unlike storing 'Ints' in a Document, this method *will* write an actual 'INTEGER_32'. 
-	Void writeInteger32(Int int32) {
+	This writeInteger32(Int int32) {
 		BsonBasicTypeWriter(out).writeInteger32(int32)
+		return this
+	}
+
+	** Flushes the underlying 'OutStream'.
+	This flush() {
+		out.flush
+		return this
 	}
 
 	private Int _sizeObject(Obj? object, BsonBasicTypeWriter writer) {
