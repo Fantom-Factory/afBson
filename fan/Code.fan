@@ -3,6 +3,7 @@
 ** Wraps a JavaScript function and its arguments.
 ** 
 ** 'Code' is not 'const' because the 'scope' document *could* contain `Binary` data. 
+@Serializable
 class Code {
 	
 	** JavaScript code.
@@ -13,11 +14,12 @@ class Code {
 	Str:Obj? scope
   
 	** Creates a BSON Code instance.
-	new make(Str code, Str:Obj? scope := [:]) {
+	new makeCode(Str code, Str:Obj? scope := [:]) {
 		this.code = code
 		this.scope = scope
 	}
+
+	** For Fantom serialisation
+	@NoDoc
+	new make(|This|f) { f(this)	}
 }
-
-
-

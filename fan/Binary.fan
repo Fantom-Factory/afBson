@@ -4,6 +4,7 @@
 ** Subtypes from zero to 127 are predefined or reserved. Subtypes from 128-255 are user-defined.
 ** 
 ** Binary objects with a default subtype of 'BIN_GENERIC' will be read and returned as a [Buf]`sys::Buf`. 
+@Serializable { simple=true }
 class Binary {
 
 	** BSON binary subtype.
@@ -28,11 +29,29 @@ class Binary {
 	const Int subtype
 	
 	** The binary data 
+	@Transient
 	Buf data
 	
 	** Creates a BSON Binary instance.
 	new make(Buf data, Int subtype := BIN_GENERIC) {
 		this.subtype = subtype
 		this.data = data
-	}	
+	}
+	
+	** For Fantom serialisation
+	@NoDoc
+	override Str toStr() {
+		Buf().writeObj(subtype).writeObj(this.data.dup.seek(0).toBase64).flip.readAllStr
+	}
+	
+	** For Fantom serialisation
+	@NoDoc
+	static new fromStr(Str str) {
+		buf := str.toBuf
+		sub := buf.readObj
+		// this next line is horrible. Bad Fantom, bad!
+		buf.seek(Buf().writeObj(sub).pos)
+		dat := buf.readObj as Str
+		return Binary(Buf.fromBase64(dat), sub)
+	}
 }

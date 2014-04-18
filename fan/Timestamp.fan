@@ -2,6 +2,7 @@
 ** (BSON Type) - 
 ** Timestamps are used internally by MongoDB's replication. 
 ** You can see them in their natural habitat by querying 'local.main.$oplog'.
+@Serializable
 const class Timestamp {
 	
 	** The seconds value.
@@ -10,10 +11,14 @@ const class Timestamp {
 	const Int increment
 	
 	** Creates a BSON Timestamp instance.
-	new make(Duration seconds, Int increment) {
+	new makeTimestamp(Duration seconds, Int increment) {
 		this.seconds = seconds
 		this.increment = increment
 	}
+	
+	** For Fantom serialisation
+	@NoDoc
+	new make(|This|f) { f(this)	}
 	
 	@NoDoc
 	override Str toStr() {

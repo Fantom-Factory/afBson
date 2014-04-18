@@ -4,9 +4,13 @@ For 1.0.0
 
 add to http://bsonspec.org/implementations.html
 
-regex db tests
-
 
 For Future
 ==========
 
+regex db tests
+
+BsonReader ->
+  Bool readGenericBinaryObjsAsBuf
+static? better name?
+'cos Binary Objs are serialisable, Bufs are not.
