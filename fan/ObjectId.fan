@@ -12,8 +12,8 @@ using concurrent
 ** <pre
 ** 
 ** @See
-**  - http://docs.mongodb.org/manual/reference/object-id/
-**  - http://api.mongodb.org/java/2.12/org/bson/types/ObjectId.html
+**  - `http://docs.mongodb.org/manual/reference/object-id/`
+**  - `http://api.mongodb.org/java/2.12/org/bson/types/ObjectId.html`
 @Serializable { simple = true }
 const class ObjectId {
 	private static const AtomicInt	counter 	:= AtomicInt(0)
@@ -87,8 +87,6 @@ const class ObjectId {
 	}
 
 	** Converts this instance into a 24 character hexadecimal string representation.
-	** 
-	** @see http://api.mongodb.org/java/2.12/org/bson/types/ObjectId.html#toHexString%28%29
 	Str toHex() {
 		toBuf.toHex
 	}
@@ -110,7 +108,7 @@ const class ObjectId {
 		}
 	}
 
-	** Returns 'ObjectId' as 24 character hexadecimal string.
+	** Returns this 'ObjectId' as a 24 character hexadecimal string.
 	override Str toStr() {
 		toHex
 	}
