@@ -76,7 +76,9 @@ const class ObjectId {
 	static new fromStream(InStream in) {
 		origEndian 	:= in.endian
 		in.endian 	= Endian.big
-		timestamp	:= DateTime.fromJava(in.readU4 * 1000)
+		// negative numbers (should some numpty write one) give a null DataTime(!)
+		// see http://fantom.org/sidewalk/topic/2267
+		timestamp	:= DateTime.fromJava(in.readS4 * 1000) ?: DateTime.fromJava(1)
 		machine		:= in.readBufFully(null, 3).toHex.toInt(16)
 		pid			:= in.readU2
 		inc			:= in.readBufFully(null, 3).toHex.toInt(16)
