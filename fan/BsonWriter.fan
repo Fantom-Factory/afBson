@@ -9,15 +9,18 @@ class BsonWriter {
 	private static const Log log	:= Utils.getLog(BsonReader#)
 
 	** The underlying 'OutStream'.
-	OutStream out {
+	OutStream? out {
 		private set
 	}
 	
 	** Creates a 'BsonWriter', wrapping the given 'OutSteam'
-	** As per the BSON spec, the stream's endian is to 'little'.
-	new make(OutStream out) {
+	** As per the BSON spec, the stream's endian is set to 'little'.
+	** 
+	** 'out' may be 'null' if the writer is just being used to size documents. 
+	new make(OutStream? out) {
 		this.out = out
-		this.out.endian = Endian.little
+		if (out != null)
+			out.endian = Endian.little
 	}
 	
 	** Serialises the given BSON Document to the underlying 'OutStream'.
@@ -28,7 +31,7 @@ class BsonWriter {
 
 	** Calculates the size (in bytes) of the given BSON Document should it be serialised.
 	** Nothing is written to the 'OutStream'.
-	Int sizeObject(Obj:Obj? document) {
+	Int sizeDocument(Obj:Obj? document) {
 		_writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
 	}
 	
@@ -59,7 +62,7 @@ class BsonWriter {
 
 	private Int _sizeObject(Obj? object, BsonBasicTypeWriter writer) {
 		// prevent us from recursively sizing objects when we're not actually writing any data
-		(writer.out == null) ? -1 : sizeObject(object)
+		(writer.out == null) ? -1 : _writeObject(object, BsonBasicTypeWriter(null)).bytesWritten
 	}
 
 	private BsonBasicTypeWriter _writeObject(Obj? obj, BsonBasicTypeWriter writer) {
@@ -164,8 +167,6 @@ class BsonWriter {
 
 ** Writes basic BSON types and keeps count of the number of bytes written.
 internal class BsonBasicTypeWriter {
-	private static const Log log	:= Utils.getLog(BsonBasicTypeWriter#)
-
 	Int bytesWritten
 	OutStream?	out
 	

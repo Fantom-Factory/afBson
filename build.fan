@@ -21,7 +21,7 @@ class Build : BuildPod {
 			"sys 1.0", 
 			
 			"inet 1.0+",
-			"concurrent 1.0+"
+			"concurrent 1.0+"	// ObjectId uses AtomicInt
 		]
 
 		srcDirs = [`test/`, `fan/`, `fan/internal/`]
