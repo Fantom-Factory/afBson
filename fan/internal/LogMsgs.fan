@@ -17,7 +17,11 @@ internal const mixin LogMsgs {
 		"BSON Array index mismatach '${key}' != ${index}"
 	}
 
-	static Str bsonReader_regexFlagsNotSupported(Str regex, Str flags) {
-		"BSON Regex flags are not supported - Regex<${regex}> has flags '${flags}'"
+	static Str bsonReader_regexFlagsNotSupported(Str regex, Str notSupported, Str flags) {
+		"BSON Regex flag(s) '${notSupported}' are not supported by Fantom: /${regex}/${flags}"
+	}
+
+	static Str bsonReader_convertedRegexFlags(Str oldRegex, Str flags, Str newRegex) {
+		"Converted BSON Regex flag(s) '${flags}' to embedded chars: /${oldRegex}/${flags}  --->  /${newRegex}/"
 	}
 }

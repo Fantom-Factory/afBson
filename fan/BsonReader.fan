@@ -1,7 +1,8 @@
 
 ** Wraps an 'InStream' to read BSON objects.
 class BsonReader {
-	private static const Log log	:= Utils.getLog(BsonReader#)
+	private static const Log 	log			:= Utils.getLog(BsonReader#)
+	private static const Int[]	regexFlags	:= "dimsuxU".chars
 
 	** The underlying 'InStream'.
 	InStream in {
@@ -97,19 +98,27 @@ class BsonReader {
 					val = null
 
 				case BsonType.REGEX:
+					// Regex flags are not supported by Fantom but flag characters can be embedded into 
+					// the pattern itself --> /(?i)case-insensitive/
+					// see Java's Pattern class for a list of supported flags --> dimsuxU
+					// see http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special
 					pattern := reader.readCString
-					flags := reader.readCString
-					// TODO: Implement Regex flags -> http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special
-					// Options are identified by characters, which must be stored in alphabetical order. 
-					// Valid options are 
-					//  - 'i' for case insensitive matching, 
-					//  - 'm' for multiline matching, 
-					//  - 'x' for verbose mode, 
-					//  - 'l' to make \w, \W, etc. locale dependent, 
-					//  - 's' for dotall mode ('.' matches everything), and 
-					//  - 'u' to make \w, \W, etc. match unicode.
-					if (flags != "")
-						log.warn(LogMsgs.bsonReader_regexFlagsNotSupported(pattern, flags))
+					flags 	:= reader.readCString
+					
+					// convert what flags we can into embedded flag characters
+					if (!flags.isEmpty) {
+						notSupported := Str.fromChars(flags.chars.findAll { !regexFlags.contains(it) })
+						if (!notSupported.isEmpty)
+							log.warn(LogMsgs.bsonReader_regexFlagsNotSupported(pattern, notSupported, flags))
+						
+						supported := Str.fromChars(flags.chars.intersection(regexFlags))
+						if (!supported.isEmpty) {
+							oldRegex := "/${pattern}/${supported}"
+							newRegex := "(?${supported})${pattern}"
+							log.info(LogMsgs.bsonReader_convertedRegexFlags(pattern, supported, newRegex))							
+							pattern = newRegex
+						}
+					}
 					val = Regex.fromStr(pattern)
 
 				case BsonType.DB_POINTER:

@@ -24,15 +24,16 @@ class BsonWriter {
 	}
 	
 	** Serialises the given BSON Document to the underlying 'OutStream'.
-	This writeDocument(Obj:Obj? document) {
-		_writeObject(document, BsonBasicTypeWriter(out))
+	This writeDocument([Obj:Obj?]? document) {
+		if (document != null)
+			_writeObject(document, BsonBasicTypeWriter(out))
 		return this
 	}
 
 	** Calculates the size (in bytes) of the given BSON Document should it be serialised.
 	** Nothing is written to the 'OutStream'.
-	Int sizeDocument(Obj:Obj? document) {
-		_writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
+	Int sizeDocument([Obj:Obj?]? document) {
+		(document == null) ? 0 :  _writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
 	}
 	
 	** Writes a 'null' terminated BSON string to 'OutStream'.
@@ -41,6 +42,13 @@ class BsonWriter {
 		return this
 	}
 
+	** Calculates the size (in bytes) of the given Str should it be serialised as a null terminated 
+	** 'CString'.
+	** Nothing is written to the 'OutStream'.
+	Int sizeCString(Str cstr) {
+		BsonBasicTypeWriter(null).writeCString(cstr).bytesWritten
+	}
+	
 	** Writes a 32 bit integer value to 'OutStream'.
 	** Unlike storing 'Ints' in a Document, this method *will* write an actual 'INTEGER_32'. 
 	This writeInteger32(Int int32) {
@@ -56,7 +64,7 @@ class BsonWriter {
 
 	** Flushes the underlying 'OutStream'.
 	This flush() {
-		out.flush
+		out?.flush
 		return this
 	}
 
@@ -123,17 +131,12 @@ class BsonWriter {
 				null?.toStr	// No-op
 
 			case BsonType.REGEX:
+				// Regex flags are not supported by Fantom but flag characters can be embedded into 
+				// the pattern itself --> /(?i)case-insensitive/
+				// see Java's Pattern class for a list of supported flags --> dimsuxU
+				// see http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special
 				writer.writeCString(obj.toStr)	// --> pattern
-				writer.writeCString("")		// --> flags
-				// TODO: Implement Regex flags -> http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special
-				// Options are identified by characters, which must be stored in alphabetical order. 
-				// Valid options are 
-				//  - 'i' for case insensitive matching, 
-				//  - 'm' for multiline matching, 
-				//  - 'x' for verbose mode, 
-				//  - 'l' to make \w, \W, etc. locale dependent, 
-				//  - 's' for dotall mode ('.' matches everything), and 
-				//  - 'u' to make \w, \W, etc. match unicode.
+				writer.writeCString("")			// --> flags
 
 			case BsonType.CODE:
 				writer.writeString((obj as Code).code)

@@ -36,16 +36,11 @@ internal class TestSizing : BsonTest {
 	Void verifySize(Obj doc, Int size) {
 		verifyEq(BsonWriter(null).sizeDocument(doc), size)
 		
-		// verify no messages were logged during reading - for they indicate a size read failure
-		failFunc := |LogRec rec| { Actor.locals["test.fail"] = rec.msg }
-		Log.addHandler(failFunc)
-		
+		// verify no messages were logged during reading - for they indicate a size read failure		
 		buf := Buf()
 		BsonWriter(buf.out).writeDocument(doc)
 		BsonReader(buf.flip.in).readDocument
-		Log.removeHandler(failFunc)
-		failLog := Actor.locals["test.fail"]
-		if (failLog != null)
-			fail("Msg logged- ${failLog}")
+		if (!logMsgs.isEmpty)
+			fail("Msg logged- ${logMsgs}")
 	}
 }
