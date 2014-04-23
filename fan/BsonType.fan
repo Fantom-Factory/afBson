@@ -5,56 +5,60 @@
 enum class BsonType {
 
 	** End-Of-Object. For internal use.
-	EOO			( 0),
+	EOO			( 0, null),
 	** Maps to [Float]`sys::Float`.
-	DOUBLE		( 1),
+	DOUBLE		( 1, Float#),
 	** Maps to [Str]`sys::Str`.
-	STRING		( 2),
+	STRING		( 2, Str#),
 	** Maps to [Map]`sys::Map`. All keys must be 'Str' and all vals must be valid BSON types.
-	DOCUMENT	( 3),
+	DOCUMENT	( 3, Map#),
 	** Maps to [List]`sys::List`. All vals must be valid BSON types.
-	ARRAY		( 4),
+	ARRAY		( 4, List#),
 	** Maps to `Binary`, or a [Buf]`sys::Buf` if the sub-type is 'BIN_GENERIC'.
-	BINARY		( 5),
+	BINARY		( 5, Binary#),
 	** Deprecated, do not use.
-	UNDEFINED	( 6),
+	UNDEFINED	( 6, null),
 	** Maps to `ObjectId`.
-	OBJECT_ID	( 7),
+	OBJECT_ID	( 7, ObjectId#),
 	** Maps to [Bool]`sys::Bool`.
-	BOOLEAN		( 8),
+	BOOLEAN		( 8, Bool#),
 	** Maps to [DateTime]`sys::DateTime`.
-	DATE		( 9),
+	DATE		( 9, DateTime#),
 	** Maps to 'null'.
-	NULL		(10),
+	NULL		(10, null),
 	** Maps to [Regex]`sys::Regex`.
-	REGEX		(11),
+	REGEX		(11, Regex#),
 	** Deprecated, do not use.
-	DB_POINTER	(12),
+	DB_POINTER	(12, null),
 	** Maps to `Code`.
-	CODE		(13),
+	CODE		(13, Code#),
 	** Deprecated, do not use.
-	SYMBOL		(14),
+	SYMBOL		(14, null),
 	** Maps to `Code`.
-	CODE_W_SCOPE(15),
+	CODE_W_SCOPE(15, Code#),
 	** > **CAUTION:** 'INTEGER_32' values will be read as [Int]`sys::Int` values. 
 	** If you then write its containing document, the storage type will be converted to 'INTEGER_64'.
 	** 
 	** This is only of concern if other, non Fantom drivers, are writing to the database.
-	INTEGER_32	(16),
+	INTEGER_32	(16, null),
 	** Maps to `Timestamp`.
-	TIMESTAMP	(17),
+	TIMESTAMP	(17, Timestamp#),
 	** Maps to [Int]`sys::Int`.
-	INTEGER_64	(18),
+	INTEGER_64	(18, Int#),
 	** Maps to `MinKey`. For internal use.
-	MIN_KEY		(255),
+	MIN_KEY		(255, MinKey#),
 	** Maps to `MaxKey`. For internal use.
-	MAX_KEY		(127);
+	MAX_KEY		(127, MaxKey#);
 	
 	** The value that uniquely identifies the type as per the [BSON spec]`http://bsonspec.org/spec.html`.
 	const Int value
 
-	private new make(Int value) {
-		this.value = value
+	** The Fantom 'Type' (if any) this BSON type maps to.
+	const Type? type
+
+	private new make(Int value, Type? type) {
+		this.value	= value
+		this.type	= type
 	}
 
 	** Throws an 'ArgErr' if invalid.
@@ -97,5 +101,21 @@ enum class BsonType {
 		if (obj is MaxKey)		return MAX_KEY
 		
 		return null ?: (checked ? throw ArgErr(ErrMsgs.bsonType_unknownType(type)) : null)
-	}	
+	}
+	
+	** Returns true if the given 'Type' is a BSON literal. 
+	** 'null' and 'Buf' are considered literals, whereas 'Maps' and 'Lists' are not.
+	** 
+	**   BsonType.isBsonLiteral(Int#)      // --> true
+	**   BsonType.isBsonLiteral(Code#)     // --> true
+	**   BsonType.isBsonLiteral(null)      // --> true
+	** 
+	**   BsonType.isBsonLiteral(List#)     // --> false
+	**   BsonType.isBsonLiteral(Str:Obj?#) // --> false
+	static Bool isBsonLiteral(Type? type) {
+		if (type == null)		return true
+		if (type.fits(Buf#))	return true
+		fanType := BsonType.vals.find { type.fits(it.type ?: Void#) }.type
+		return fanType != null && fanType != Map# && fanType != List#
+	}
 }
