@@ -41,4 +41,23 @@ internal class TestBsonType : BsonTest {
 		// this is allowed 'cos we're not yet serialising the map values
 		verifyEq(BsonType.fromObj(Str:Obj?["wot":this]), BsonType.DOCUMENT)
 	}
+	
+	Void testIsBsonLiteral() {
+		verify(BsonType.isBsonLiteral(Int#))
+		verify(BsonType.isBsonLiteral(Str#))
+		verify(BsonType.isBsonLiteral(Code#))
+		verify(BsonType.isBsonLiteral(Binary#))
+		verify(BsonType.isBsonLiteral(Buf#))
+		verify(BsonType.isBsonLiteral(null))
+		verify(BsonType.isBsonLiteral(T_MyBin#))
+
+		verifyFalse(BsonType.isBsonLiteral(List#))
+		verifyFalse(BsonType.isBsonLiteral(Map#))
+		verifyFalse(BsonType.isBsonLiteral(Str:Obj?#))
+		verifyFalse(BsonType.isBsonLiteral(Str[]#))
+	}
+}
+
+internal class T_MyBin : Binary {
+	new make(Buf data) : super(data, 0) { } 
 }
