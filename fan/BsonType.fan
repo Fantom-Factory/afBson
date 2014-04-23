@@ -115,7 +115,7 @@ enum class BsonType {
 	static Bool isBsonLiteral(Type? type) {
 		if (type == null)		return true
 		if (type.fits(Buf#))	return true
-		fanType := BsonType.vals.find { type.fits(it.type ?: Void#) }.type
+		fanType := BsonType.vals.find { type.fits(it.type ?: Void#) }?.type
 		return fanType != null && fanType != Map# && fanType != List#
 	}
 }
