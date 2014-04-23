@@ -14,7 +14,7 @@ class Code {
 	Str:Obj? scope
   
 	** Creates a BSON Code instance.
-	new makeCode(Str code, Str:Obj? scope := [:]) {
+	new makeCode(Str code, Str:Obj? scope := Str:Obj?[:]) {
 		this.code = code
 		this.scope = scope
 	}
