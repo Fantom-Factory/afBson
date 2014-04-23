@@ -1,8 +1,8 @@
 
 internal const mixin ErrMsgs {
 	
-	static Str bsonType_unknownId(Int id) {
-		"Unknown BSON type id '${id}'"
+	static Str bsonType_unknownValue(Int value) {
+		"Unknown BSON type id '${value}'"
 	}
 
 	static Str bsonType_unknownType(Type type) {

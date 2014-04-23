@@ -50,16 +50,16 @@ enum class BsonType {
 	** Maps to `MaxKey`. For internal use.
 	MAX_KEY		(127);
 	
+	** The value that uniquely identifies the type as per the [BSON spec]`http://bsonspec.org/spec.html`.
 	const Int value
 
 	private new make(Int value) {
 		this.value = value
 	}
 
-	** Returns the BSON type for the given id.
 	** Throws an 'ArgErr' if invalid.
-	static new fromId(Int value, Bool checked := true) {
-		BsonType.vals.find { it.value == value } ?: (checked ? throw ArgErr(ErrMsgs.bsonType_unknownId(value)) : null)
+	static new fromValue(Int value, Bool checked := true) {
+		BsonType.vals.find { it.value == value } ?: (checked ? throw ArgErr(ErrMsgs.bsonType_unknownValue(value)) : null)
 	}
 	
 	** Determines a BSON type from the type of the given object.

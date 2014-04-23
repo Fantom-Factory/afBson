@@ -1,15 +1,15 @@
 
 internal class TestBsonType : BsonTest {
 	
-	Void testFromId() {
-		verifyEq(BsonType.fromId( 0), BsonType.EOO)
-		verifyEq(BsonType.fromId(10), BsonType.NULL)
+	Void testFromValued() {
+		verifyEq(BsonType.fromValue( 0), BsonType.EOO)
+		verifyEq(BsonType.fromValue(10), BsonType.NULL)
 		
-		verifyErrMsg(ArgErr#, ErrMsgs.bsonType_unknownId(23)) {
-			b := BsonType.fromId(23)
+		verifyErrMsg(ArgErr#, ErrMsgs.bsonType_unknownValue(23)) {
+			b := BsonType.fromValue(23)
 		}
 		
-		verifyNull(BsonType.fromId(23, false))
+		verifyNull(BsonType.fromValue(23, false))
 	}
 
 	Void testFromType() {
