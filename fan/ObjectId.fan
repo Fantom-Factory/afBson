@@ -116,13 +116,11 @@ const class ObjectId {
 	@NoDoc
 	override Bool equals(Obj? obj) {
 		objId := obj as ObjectId
-		
-		if (objId == null)					return false
+		if (objId 		== null)			return false
 		if (inc 		!= objId.inc)		return false
 		if (pid 		!= objId.pid)		return false
 		if (machine 	!= objId.machine)	return false
 		if (timestamp	!= objId.timestamp)	return false
-		
 		return true
 	}
 }

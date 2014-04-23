@@ -86,7 +86,7 @@ class BsonWriter {
 			case BsonType.DOCUMENT:
 				docSize := _sizeObject(obj, writer)
 				writer.writeInteger32(docSize)
-				(obj as Obj:Obj?).each |val, name| {
+				((Obj:Obj?) obj).each |val, name| {
 					// a controversial decision - we check individual key types, not the map key type
 					// because with [:] it's far too easy to declare Obj maps without knowing it
 					// if I were to check the paramaterized Map type, people would soon hate me!
@@ -108,7 +108,7 @@ class BsonWriter {
 				if (obj is Buf) 
 					obj = Binary(obj, Binary.BIN_GENERIC)
 
-				binary := obj as Binary
+				binary := (Binary) obj
 				dataSize := (binary.subtype == Binary.BIN_BINARY_OLD) ? 4 : 0
 				dataSize += binary.data.size
 				writer.writeInteger32(dataSize)
@@ -124,7 +124,7 @@ class BsonWriter {
 				writer.writeByte(obj ? 0x01 : 0x00)
 
 			case BsonType.DATE:
-				millisecs := (obj as DateTime).toJava
+				millisecs := ((DateTime) obj).toJava
 				writer.writeInteger64(millisecs)
 
 			case BsonType.NULL:
@@ -139,17 +139,17 @@ class BsonWriter {
 				writer.writeCString("")			// --> flags
 
 			case BsonType.CODE:
-				writer.writeString((obj as Code).code)
+				writer.writeString(((Code) obj).code)
 
 			case BsonType.CODE_W_SCOPE:
-				code := obj as Code
+				code := (Code) obj
 				codeSize := _sizeObject(code, writer)
 				writer.writeInteger32(codeSize)
 				writer.writeString(code.code)
 				_writeObject(code.scope, writer)
 
 			case BsonType.TIMESTAMP:
-				timestamp := obj as Timestamp
+				timestamp := (Timestamp) obj
 				writer.writeInteger32(timestamp.seconds.toSec)
 				writer.writeInteger32(timestamp.increment)
 

@@ -95,7 +95,7 @@ enum class BsonType {
 		if (obj is Binary)		return BINARY
 		if (obj is Buf)			return BINARY
 		if (obj is ObjectId)	return OBJECT_ID
-		if (obj is Code)		return (obj as Code).scope.isEmpty ? CODE : CODE_W_SCOPE
+		if (obj is Code)		return ((Code) obj).scope.isEmpty ? CODE : CODE_W_SCOPE
 		if (obj is Timestamp)	return TIMESTAMP
 		if (obj is MinKey)		return MIN_KEY
 		if (obj is MaxKey)		return MAX_KEY
