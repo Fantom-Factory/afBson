@@ -94,11 +94,11 @@ class BsonWriter {
 						throw ArgErr(ErrMsgs.bsonType_unknownNameType(name))
 					
 					valType := BsonType.fromObj(val, true)
-					writer.writeByte(valType.id)
+					writer.writeByte(valType.value)
 					writer.writeCString(name)
 					_writeObject(val, writer)
 				}
-				writer.writeByte(BsonType.EOO.id)
+				writer.writeByte(BsonType.EOO.value)
 
 			case BsonType.ARRAY:
 			    doc := Str:Obj?[:] { ordered = true }.addList(obj) |v, i->Str| { i.toStr }
