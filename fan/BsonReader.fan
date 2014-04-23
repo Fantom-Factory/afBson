@@ -42,7 +42,7 @@ class BsonReader {
 		objSize	:= reader.readInteger32
 		
 		while ((reader.bytesRead - posMark) < objSize) {
-			type := BsonType.fromId(reader.readByte, true)
+			type := BsonType.fromValue(reader.readByte, true)
 			name := (type == BsonType.EOO) ? null : reader.readCString
 			val  := null
 
