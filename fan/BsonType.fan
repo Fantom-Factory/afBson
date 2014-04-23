@@ -80,7 +80,6 @@ enum class BsonType {
 			case Str#:		return STRING
 			case Bool#:		return BOOLEAN
 			case DateTime#:	return DATE
-			case Date#:		return DATE
 			case null:		return NULL
 			case Regex#:	return REGEX
 			case Int#:		return INTEGER_64
