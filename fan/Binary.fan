@@ -51,7 +51,7 @@ class Binary {
 		sub := buf.readObj
 		// this next line is horrible. Bad Fantom, bad!
 		buf.seek(Buf().writeObj(sub).pos)
-		dat := buf.readObj as Str
+		dat := (Str) buf.readObj
 		return Binary(Buf.fromBase64(dat), sub)
 	}
 }
