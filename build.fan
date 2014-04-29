@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBson"
 		summary = "A BSON specification implementation"
-		version = Version("0.0.2")
+		version = Version("0.0.3")
 
 		meta = [
 			"org.name"		: "Alien-Factory",
@@ -14,7 +14,7 @@ class Build : BuildPod {
 			"proj.uri"		: "http://www.fantomfactory.org/pods/afBson",
 			"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbson",
 			"license.name"	: "MIT Licence",	
-			"repo.private"	: "false"
+			"repo.private"	: "true"
 		]
 
 		depends = [
