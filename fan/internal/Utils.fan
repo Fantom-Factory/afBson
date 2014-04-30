@@ -12,7 +12,7 @@ internal const mixin Utils {
 	static DateTime fromUnixEpoch(Int timeInMs) {
 		timeInMs > 0
 			? DateTime.fromJava(timeInMs)
-			: unixEpoch + Duration.fromStr("${timeInMs}ms")
+			: unixEpoch + Duration(timeInMs * 1000000)
 	}
 	
 }

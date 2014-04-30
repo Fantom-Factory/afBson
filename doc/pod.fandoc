@@ -104,6 +104,8 @@ The Alien-Factoy BSON library was inspired by [fantomongo]`https://bitbucket.org
 Release Notes [#releaseNotes]
 *****************************
 
-v0.0.2 [#v0.0.2]
+v1.0.0 [#v1.0.0]
 ----------------
- - New: Preview release.
+ - New: Initial release.
+ - Bug: Worked around the dodgy [DateTime.fromJava()]`http://fantom.org/sidewalk/topic/2267` quirks.
+
