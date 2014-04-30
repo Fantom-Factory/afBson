@@ -92,7 +92,8 @@ class BsonReader {
 					val = (reader.readByte == 0x01)
 
 				case BsonType.DATE:
-					val = DateTime.fromJava(reader.readInteger64)
+//					val = DateTime.fromJava(reader.readInteger64)
+					val = Utils.fromUnixEpoch(reader.readInteger64)
 
 				case BsonType.NULL:
 					val = null
