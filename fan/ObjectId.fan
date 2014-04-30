@@ -59,10 +59,12 @@ const class ObjectId {
 			return null ?: (checked ? throw ParseErr("Could not parse ObjectId: ${hex}") : null)
 
 		try {
-			timestamp	:= DateTime.fromJava(hex[ 0..< 8].toInt(16) * 1000)
+			timeFromStr	:= hex[ 0..< 8].toInt(16)
 			machine		:= hex[ 8..<14].toInt(16)
 			pid			:= hex[14..<18].toInt(16)
 			inc			:= hex[18..<24].toInt(16)
+			timeInSecs	:= Buf(4).writeI4(timeFromStr).flip.readS4	// re-read as a signed number
+			timestamp	:= Utils.fromUnixEpoch(timeInSecs * 1000)
 			return ObjectId(timestamp, machine, pid, inc)
 
 		} catch (Err e) {
@@ -76,9 +78,7 @@ const class ObjectId {
 	static new fromStream(InStream in) {
 		origEndian 	:= in.endian
 		in.endian 	= Endian.big
-		// negative numbers (should some numpty write one) give a null DataTime(!)
-		// see http://fantom.org/sidewalk/topic/2267
-		timestamp	:= DateTime.fromJava(in.readS4 * 1000) ?: DateTime.fromJava(1)
+		timestamp	:= Utils.fromUnixEpoch(in.readS4 * 1000)
 		machine		:= in.readBufFully(null, 3).toHex.toInt(16)
 		pid			:= in.readU2
 		inc			:= in.readBufFully(null, 3).toHex.toInt(16)

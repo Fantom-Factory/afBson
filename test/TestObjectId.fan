@@ -1,15 +1,16 @@
 
 internal class TestObjectId : BsonTest {
 
-	static const DateTime epoc	:= DateTime.fromJava(1000) 
+	static const DateTime epoch		:= DateTime.fromJava(1000) 
+	static const DateTime b4Epoch	:= (DateTime.fromJava(1) - 1day).floor(1sec)
 	
 	Void testMakeAll() {
-		objId	:= ObjectId(epoc, 2, 3, 4)
+		objId	:= ObjectId(epoch, 2, 3, 4)
 		
-		verifyEq(objId.timestamp,	epoc)
-		verifyEq(objId.machine,		   2)
-		verifyEq(objId.pid,			   3)
-		verifyEq(objId.inc,			   4)
+		verifyEq(objId.timestamp,	epoch)
+		verifyEq(objId.machine,		    2)
+		verifyEq(objId.pid,			    3)
+		verifyEq(objId.inc,			    4)
 	}
 
 	Void textInc() {
@@ -19,19 +20,29 @@ internal class TestObjectId : BsonTest {
 	}
 
 	Void testToHex() {
-		objId	:= ObjectId(epoc, 2, 3, 4)
+		objId	:= ObjectId(epoch, 2, 3, 4)
 		verifyEq(objId.toHex, "000000010000020003000004")
 	}
 
 	Void testFromStr() {
 		objId	:= ObjectId("000000010000020003000004")
 
-		verifyEq(objId.timestamp,	epoc)
-		verifyEq(objId.machine,		   2)
-		verifyEq(objId.pid,			   3)
-		verifyEq(objId.inc,			   4)
+		verifyEq(objId.timestamp,	epoch)
+		verifyEq(objId.machine,		    2)
+		verifyEq(objId.pid,			    3)
+		verifyEq(objId.inc,			    4)
 		
 		verifyNull(ObjectId("Oops!", false))
+	}
+
+	Void testFromStrWithDodgyDate() {
+		str := ObjectId(b4Epoch, 2, 3, 4).toStr
+		objId	:= ObjectId(str)
+		
+		verifyEq(objId.timestamp,	b4Epoch)
+		verifyEq(objId.machine,		      2)
+		verifyEq(objId.pid,			      3)
+		verifyEq(objId.inc,			      4)
 	}
 
 	Void testFromInStream() {
@@ -42,10 +53,10 @@ internal class TestObjectId : BsonTest {
 		in.endian = Endian.big
 		objId := ObjectId(in)
 		
-		verifyEq(objId.timestamp,	epoc)
-		verifyEq(objId.machine,		   2)
-		verifyEq(objId.pid,			   3)
-		verifyEq(objId.inc,			   4)
+		verifyEq(objId.timestamp,	epoch)
+		verifyEq(objId.machine,		    2)
+		verifyEq(objId.pid,			    3)
+		verifyEq(objId.inc,			    4)
 	}
 
 	Void testFromInStreamWithDodgyEndian() {
@@ -56,10 +67,23 @@ internal class TestObjectId : BsonTest {
 		in.endian = Endian.little
 		objId := ObjectId(in)
 		
-		verifyEq(objId.timestamp,	epoc)
-		verifyEq(objId.machine,		   2)
-		verifyEq(objId.pid,			   3)
-		verifyEq(objId.inc,			   4)
+		verifyEq(objId.timestamp,	epoch)
+		verifyEq(objId.machine,		    2)
+		verifyEq(objId.pid,			    3)
+		verifyEq(objId.inc,			    4)
+	}
+
+	Void testFromInStreamWithDodgyDate() {
+		in := Buf()
+			.writeI4(b4Epoch.toJava / 1000)
+			.writeI4(0x00000200)
+			.writeI4(0x03000004).flip.in
+		objId := ObjectId(in)
+		
+		verifyEq(objId.timestamp,	b4Epoch)
+		verifyEq(objId.machine,		2)
+		verifyEq(objId.pid,			3)
+		verifyEq(objId.inc,			4)
 	}
 	
 	Void testEquals() {
@@ -97,9 +121,9 @@ internal class TestObjectId : BsonTest {
 	}
 
 	Void testHash() {
-		objId1	:= ObjectId(epoc, 2, 3, 4)
-		objId2	:= ObjectId(epoc, 2, 3, 4)
-		objId3	:= ObjectId(epoc, 2, 3, 5)
+		objId1	:= ObjectId(epoch, 2, 3, 4)
+		objId2	:= ObjectId(epoch, 2, 3, 4)
+		objId3	:= ObjectId(epoch, 2, 3, 5)
 		
 		verifyEq	(objId1.hash, objId2.hash)
 		verifyNotEq (objId1.hash, objId3.hash)

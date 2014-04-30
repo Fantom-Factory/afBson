@@ -85,5 +85,17 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["minKey"],		MinKey())
 		verifyEq(doc["maxKey"],		MaxKey())
 	}
+	
+	Void testQuirkyDateTimeFromJava() {
+		atEpoch := DateTime.fromJava(1) - 1ms
+		b4Epoch := DateTime.fromJava(1) - 1day
+		b := Buf()
+		BsonWriter(b.out).writeDocument(["at":atEpoch, "b4":b4Epoch])
+		doc := BsonReader(b.flip.in).readDocument
+		
+//		verifyEq(doc["at"], atEpoch)
+		verifyEq(doc["b4"], b4Epoch)
+	}
+
 }
 
