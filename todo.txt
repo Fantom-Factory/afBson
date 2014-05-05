@@ -2,13 +2,10 @@
 For 1.0.0
 =========
 
-add to http://bsonspec.org/implementations.html
 
 
 For Future
 ==========
-
-regex db tests
 
 BsonReader ->
   Bool readGenericBinaryObjsAsBuf
