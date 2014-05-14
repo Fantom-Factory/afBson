@@ -1,5 +1,0 @@
-'Bson' is an implementation of the [BSON specification]`http://bsonspec.org/spec.html` complete with serialisation and deserialisation.
-
-'Bson' was created to support the Alien-Factory MongoDB Driver library.
-
-
