@@ -10,7 +10,7 @@ class Build : BuildPod {
 		meta = [
 			"proj.name"		: "Bson",
 			"tags"			: "database",
-			"repo.private"	: "true"		
+			"repo.private"	: "false"		
 		]
 
 		depends = [
