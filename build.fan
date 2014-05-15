@@ -5,12 +5,12 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBson"
 		summary = "A BSON specification implementation"
-		version = Version("1.0.0")
+		version = Version("1.0.1")
 
 		meta = [
 			"proj.name"		: "Bson",
 			"tags"			: "database",
-			"repo.private"	: "false"		
+			"repo.private"	: "true"		
 		]
 
 		depends = [
