@@ -37,8 +37,8 @@ class Example {
 
     documentIn := [
       "_id"  : ObjectId(),
-      "name"  : "Dave",
-      "age"  : "42"
+      "name" : "Dave",
+      "age"  : 42
     ]
 
     // serialise BSON to a stream
@@ -68,22 +68,22 @@ The main `BsonReader` and `BsonWriter` classes (de)serialise BSON objects to and
 pre>
 BSON                Fantom
 ---------------------------------
-DOUBLE       ->    sys::Float
-STRING       ->    sys::Str
-DOCUMENT     ->    sys::Map
 ARRAY        ->    sys::List
 BINARY       -> afBson::Binary
-OBJECT_ID    -> afBson::ObjectId
 BOOLEAN      ->    sys::Bool
-DATE         ->    sys::DateTime
-NULL         ->         null
-REGEX        ->    sys::Regex
 CODE         -> afBson::Code
 CODE_W_SCOPE -> afBson::Code
-TIMESTAMP    -> afBson::Timestamp
+DATE         ->    sys::DateTime
+DOCUMENT     ->    sys::Map
+DOUBLE       ->    sys::Float
 INTEGER_64   ->    sys::Int
-MIN_KEY      -> afBson::MinKey
 MAX_KEY      -> afBson::MaxKey
+MIN_KEY      -> afBson::MinKey
+NULL         ->         null
+OBJECT_ID    -> afBson::ObjectId
+REGEX        ->    sys::Regex
+STRING       ->    sys::Str
+TIMESTAMP    -> afBson::Timestamp
 <pre
 
 Note that the deprecated BSON constructs 'UNDEFINED', 'DB_POINTER' and 'SYMBOL' are ignored and have no Fantom representation.
@@ -113,5 +113,10 @@ Release Notes [#releaseNotes]
 v1.0.0 [#v1.0.0]
 ----------------
  - New: Initial release.
+ - New: 'BsonWriter' caches nested document sizes for increased performance.
  - Bug: Worked around the dodgy [DateTime.fromJava()]`http://fantom.org/sidewalk/topic/2267` quirks.
+
+v0.0.2 [#v0.0.2]
+----------------
+ - New: Preview release.
 

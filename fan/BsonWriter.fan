@@ -8,6 +8,9 @@
 class BsonWriter {
 	private static const Log log	:= Utils.getLog(BsonReader#)
 
+	private Str[] 	nameStack		:= [,]
+	private Str:Int sizeCache		:= [:]
+
 	** The underlying 'OutStream'.
 	OutStream? out {
 		private set
@@ -25,15 +28,19 @@ class BsonWriter {
 	
 	** Serialises the given BSON Document to the underlying 'OutStream'.
 	This writeDocument([Obj:Obj?]? document) {
-		if (document != null)
-			_writeObject(document, BsonBasicTypeWriter(out))
-		return this
+		(BsonWriter) cache |->Obj?| {
+			if (document != null)
+				_writeObject(document, BsonBasicTypeWriter(out))
+			return this
+		}
 	}
 
 	** Calculates the size (in bytes) of the given BSON Document should it be serialised.
 	** Nothing is written to the 'OutStream'.
 	Int sizeDocument([Obj:Obj?]? document) {
-		(document == null) ? 0 :  _writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
+		cache |->Int| {
+			(document == null) ? 0 : _writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
+		}
 	}
 	
 	** Writes a 'null' terminated BSON string to 'OutStream'.
@@ -69,8 +76,18 @@ class BsonWriter {
 	}
 
 	private Int _sizeObject(Obj? object, BsonBasicTypeWriter writer) {
+		// use toCode() to prevent names from masquerading as multiple keys, e.g. func.code.scope 
+		name := nameStack.toCode
+		if (sizeCache.containsKey(name))
+			return sizeCache[name]
+
 		// prevent us from recursively sizing objects when we're not actually writing any data
-		(writer.out == null) ? -1 : _writeObject(object, BsonBasicTypeWriter(null)).bytesWritten
+		if (writer.out == null)
+			return -1
+
+		size := _writeObject(object, BsonBasicTypeWriter(null)).bytesWritten
+		sizeCache.add(name, size)	// use add() to make sure we don't overwrite any existing keys!
+		return size
 	}
 
 	private BsonBasicTypeWriter _writeObject(Obj? obj, BsonBasicTypeWriter writer) {
@@ -93,10 +110,12 @@ class BsonWriter {
 					if (name isnot Str)
 						throw ArgErr(ErrMsgs.bsonType_unknownNameType(name))
 					
+					nameStack.push(name)
 					valType := BsonType.fromObj(val, true)
 					writer.writeByte(valType.value)
 					writer.writeCString(name)
 					_writeObject(val, writer)
+					nameStack.pop
 				}
 				writer.writeByte(BsonType.EOO.value)
 
@@ -143,10 +162,14 @@ class BsonWriter {
 
 			case BsonType.CODE_W_SCOPE:
 				code := (Code) obj
+				nameStack.push("code")
 				codeSize := _sizeObject(code, writer)
 				writer.writeInteger32(codeSize)
 				writer.writeString(code.code)
+				nameStack.push("scope")
 				_writeObject(code.scope, writer)
+				nameStack.pop
+				nameStack.pop
 
 			case BsonType.TIMESTAMP:
 				timestamp := (Timestamp) obj
@@ -164,7 +187,18 @@ class BsonWriter {
 		}
 		
 		return writer
-	}	
+	}
+	
+	Obj? cache(|->Obj?| c) {
+		try {
+			return c.call()
+		} finally {
+			Env.cur.err.printLine(sizeCache)
+			// clear nameStack in case we're exiting use to an Err and it wasn't popped 
+			nameStack.clear
+			sizeCache.clear
+		}
+	}
 }
 
 
