@@ -193,7 +193,6 @@ class BsonWriter {
 		try {
 			return c.call()
 		} finally {
-			Env.cur.err.printLine(sizeCache)
 			// clear nameStack in case we're exiting use to an Err and it wasn't popped 
 			nameStack.clear
 			sizeCache.clear
