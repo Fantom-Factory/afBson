@@ -1,5 +1,7 @@
 
 ** Wraps an 'InStream' to read BSON objects.
+** 
+** Note that `Binary` objects with a subtype of 'BIN_GENERIC' will be read and returned as a [Buf]`sys::Buf`.
 class BsonReader {
 	private static const Log 	log			:= Utils.getLog(BsonReader#)
 	private static const Int[]	regexFlags	:= "dimsuxU".chars
