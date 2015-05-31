@@ -1,33 +1,16 @@
-Overview [#overview]
-********************
-'Bson' is an implementation of the [BSON specification]`http://bsonspec.org/spec.html` complete with BSON serialisation and deserialisation.
+Overview
+********
+Bson is an implementation of the [BSON specification]`http://bsonspec.org/spec.html` complete with BSON serialisation and deserialisation.
 
-'Bson' was created to support the development of the Alien-Factory [MongoDB driver]`pod:afMongo`.
-
-
-
-Install [#Install]
-******************
-Install '@{project.name}' with the Fantom Repository Manager ( [fanr]`docFanr::Tool.install` ):
-
-  C:\> fanr install -r http://repo.status302.com/fanr/ @{pod.name}
-
-To use in a [Fantom]`http://fantom.org/` project, add a dependency to 'build.fan':
-
-  depends = ["sys 1.0", ..., "@{pod.name} @{pod.version}+"]
+Bson was created to support the development of the Alien-Factory [MongoDB driver]`pod:afMongo`.
 
 
 
-Documentation [#documentation]
-******************************
-Full API & fandocs are available on the [Status302 repository]`http://repo.status302.com/doc/@{pod.name}/#overview`.
-
-
-
-Quick Start [#quickStart]
-*************************
+Quick Start
+***********
 1). Create a text file called 'Example.fan':
 pre>
+syntax: fantom
 using afBson
 
 class Example {
@@ -61,8 +44,8 @@ C:\> fan Example.fan
 
 
 
-Usage [#usage]
-**************
+Usage
+*****
 The main `BsonReader` and `BsonWriter` classes (de)serialise BSON objects to and from Fantom using the following mapping:
 
 pre>
@@ -105,18 +88,4 @@ Again, this is only of concern if other, non Fantom, drivers have written 'REGEX
 
 The Alien-Factoy BSON library was inspired by [fantomongo]`https://bitbucket.org/liamstask/fantomongo` by Liam Staskawicz.
 
-
-
-Release Notes [#releaseNotes]
-*****************************
-
-v1.0.0 [#v1.0.0]
-----------------
- - New: Initial release.
- - New: 'BsonWriter' caches nested document sizes for increased performance.
- - Bug: Worked around the dodgy [DateTime.fromJava()]`http://fantom.org/sidewalk/topic/2267` quirks.
-
-v0.0.2 [#v0.0.2]
-----------------
- - New: Preview release.
 

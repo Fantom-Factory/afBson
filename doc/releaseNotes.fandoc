@@ -1,0 +1,12 @@
+Versions
+********
+
+v1.0.0
+======
+ - New: Initial release.
+ - New: 'BsonWriter' caches nested document sizes for increased performance.
+ - Bug: Worked around the dodgy [DateTime.fromJava()]`http://fantom.org/sidewalk/topic/2267` quirks.
+
+v0.0.2
+======
+ - New: Preview release.
