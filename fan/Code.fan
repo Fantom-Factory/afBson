@@ -5,6 +5,7 @@
 ** 'scope' values are automatically evaluated in the context of the code when it is executed.
 ** Example:
 ** 
+**   Syntax: fantom
 **   Code("function (x) { return x + y; }", ["y":2])
 ** 
 ** Code objects let you re-use functions and change their parameters without re-interpolating a 

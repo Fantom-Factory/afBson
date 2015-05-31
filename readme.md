@@ -1,10 +1,16 @@
-## Overview 
+#Bson v1.0.0
+---
+[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
+[![pod: v1.0.0](http://img.shields.io/badge/pod-v1.0.0-yellow.svg)](http://www.fantomfactory.org/pods/afBson)
+![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
-`Bson` is an implementation of the [BSON specification](http://bsonspec.org/spec.html) complete with BSON serialisation and deserialisation.
+## Overview
 
-`Bson` was created to support the development of the Alien-Factory [MongoDB driver](http://www.fantomfactory.org/pods/afMongo).
+Bson is an implementation of the [BSON specification](http://bsonspec.org/spec.html) complete with BSON serialisation and deserialisation.
 
-## Install 
+Bson was created to support the development of the Alien-Factory [MongoDB driver](http://pods.fantomfactory.org/pods/afMongo).
+
+## Install
 
 Install `Bson` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -12,13 +18,13 @@ Install `Bson` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afBson 1.0+"]
+    depends = ["sys 1.0", ..., "afBson 1.0"]
 
-## Documentation 
+## Documentation
 
-Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afBson/#overview).
+Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afBson/).
 
-## Quick Start 
+## Quick Start
 
 1). Create a text file called `Example.fan`:
 
@@ -55,9 +61,9 @@ C:\> fan Example.fan
 [_id:53503531a8000b8b44000001, name:Dave, age:42]
 ```
 
-## Usage 
+## Usage
 
-The main [BsonReader](http://repo.status302.com/doc/afBson/BsonReader.html) and [BsonWriter](http://repo.status302.com/doc/afBson/BsonWriter.html) classes (de)serialise BSON objects to and from Fantom using the following mapping:
+The main [BsonReader](http://pods.fantomfactory.org/pods/afBson/api/BsonReader) and [BsonWriter](http://pods.fantomfactory.org/pods/afBson/api/BsonWriter) classes (de)serialise BSON objects to and from Fantom using the following mapping:
 
 ```
 BSON                Fantom
