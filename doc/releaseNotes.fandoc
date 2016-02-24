@@ -1,6 +1,10 @@
 Versions
 ********
 
+v1.0.2
+======
+ - Chg: Better IP hash in 'ObjectId' for IP6 addresses.
+
 v1.0.0
 ======
  - New: Initial release.
@@ -10,3 +14,4 @@ v1.0.0
 v0.0.2
 ======
  - New: Preview release.
+

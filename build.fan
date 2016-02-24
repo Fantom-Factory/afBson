@@ -20,7 +20,7 @@ class Build : BuildPod {
 			"concurrent 1.0"	// ObjectId uses AtomicInt
 		]
 
-		srcDirs = [`test/`, `fan/`, `fan/internal/`]
+		srcDirs = [`fan/`, `fan/internal/`, `test/`]
 		resDirs = [`doc/`]
 
 		docApi = true
