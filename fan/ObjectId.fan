@@ -17,8 +17,7 @@ using concurrent
 @Serializable { simple = true }
 const class ObjectId {
 	private static const AtomicInt	counter 	:= AtomicInt(0)
-	// TODO: this machine hash isn't very good on IP6 addresses
-	private static const Int 		thisMachine	:= IpAddr.local.bytes.readS4
+	private static const Int 		thisMachine	:= IpAddr.local.bytes.toBase64.hash
 	// one cannot get the ProcessId in Java - http://fantom.org/sidewalk/topic/856
 	// Even the Java impl of ObjectId generates a random Int 
 	private static const Int 		thisPid		:= Int.random
