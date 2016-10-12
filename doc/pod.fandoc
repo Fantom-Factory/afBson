@@ -2,6 +2,8 @@ Overview
 ********
 Bson is an implementation of the [BSON specification]`http://bsonspec.org/spec.html` complete with BSON serialisation and deserialisation.
 
+Note that BSON is an extention of JSON, and JSON can only represent a subset of the types supported by BSON.
+
 Bson was created to support the development of the Alien-Factory [MongoDB driver]`pod:afMongo`.
 
 
@@ -72,7 +74,7 @@ TIMESTAMP    -> afBson::Timestamp
 Note that the deprecated BSON constructs 'UNDEFINED', 'DB_POINTER' and 'SYMBOL' are ignored and have no Fantom representation.
 
 'Bson' takes care of all the tricky 'Endian'ness.
-All BSON objects (except for 'Buf' and [Regex]`http://fantom.org/sidewalk/topic/2266`) may also be serialised to and from strings using Fantom's standard serialisation techniques.
+All BSON objects (except for 'Buf') may be serialised to and from strings using Fantom's standard serialisation techniques.
 
 > **CAUTION:** 'INTEGER_32' values will be read as [Int]`sys::Int` values.
 If you then write its containing document, the storage type will be converted to 'INTEGER_64'.

@@ -153,7 +153,7 @@ class BsonReader {
 				case BsonType.TIMESTAMP:
 					sec := reader.readInteger32
 					inc := reader.readInteger32
-					val = Timestamp(Duration.fromStr("${sec}sec"), inc)
+					val = Timestamp(sec, inc)
 
 				case BsonType.INTEGER_64:
 					val = reader.readInteger64

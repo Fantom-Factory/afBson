@@ -3,7 +3,9 @@ Versions
 
 v1.0.2
 ======
+ - New: 'Timestamp.now()' returns a unique Timestamp.
  - Chg: Better IP hash in 'ObjectId' for IP6 addresses.
+ - Chg: Changed 'Timestamp.seconds' from a 'Duration' to an 'Int'.
 
 v1.0.0
 ======
