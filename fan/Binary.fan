@@ -42,17 +42,15 @@ const class Binary {
 	** For Fantom serialisation
 	@NoDoc
 	override Str toStr() {
-		Buf().writeObj(subtype).writeObj(this.data.toBase64).flip.readAllStr
+		StrBuf().add(subtype).addChar('-').add(data.toBase64).toStr
 	}
 	
 	** For Fantom serialisation
 	@NoDoc
 	static new fromStr(Str str) {
-		buf := str.toBuf
-		sub := buf.readObj
-		// this next line is horrible. Bad Fantom, bad!
-		buf.seek(Buf().writeObj(sub).pos)
-		dat := (Str) buf.readObj
-		return Binary(Buf.fromBase64(dat), sub)
+		dIdx	:= str.index("-")
+		sub		:= str[0..<dIdx].toInt
+		base64	:= str[dIdx+1..-1]
+		return Binary(Buf.fromBase64(base64), sub)
 	}
 }

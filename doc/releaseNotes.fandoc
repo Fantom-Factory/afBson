@@ -5,6 +5,7 @@ v1.0.2
 ======
  - New: 'Timestamp.now()' returns a unique Timestamp.
  - Chg: 'Binary' and 'Code' are now 'const' classes. (Potential breaking change.)
+ - Chg: Better Fantom serialization for 'Binary'.
  - Chg: Changed 'Timestamp.seconds' from a 'Duration' to an 'Int'. (Potential breaking change.)
  - Chg: Better IP hash in 'ObjectId' for IP6 addresses.
 
