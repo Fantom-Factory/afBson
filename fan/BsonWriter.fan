@@ -124,17 +124,16 @@ class BsonWriter {
 			    _writeObject(doc, writer)
 
 			case BsonType.BINARY:
-				if (obj is Buf) 
-					obj = Binary(obj, Binary.BIN_GENERIC)
+				buff := (Buf) (obj is Buf ? obj : ((Binary) obj).data)
+				bint := (Int) (obj is Buf ? Binary.BIN_GENERIC : ((Binary) obj).subtype)
 
-				binary := (Binary) obj
-				dataSize := (binary.subtype == Binary.BIN_BINARY_OLD) ? 4 : 0
-				dataSize += binary.data.size
+				dataSize := (bint == Binary.BIN_BINARY_OLD) ? 4 : 0
+				dataSize += buff.size
 				writer.writeInteger32(dataSize)
-				writer.writeByte(binary.subtype)
-				if (binary.subtype == Binary.BIN_BINARY_OLD) 
-					writer.writeInteger32(binary.data.size)
-				writer.writeBinary(binary.data)
+				writer.writeByte(bint)
+				if (bint == Binary.BIN_BINARY_OLD) 
+					writer.writeInteger32(buff.size)
+				writer.writeBinary(buff)
 
 			case BsonType.OBJECT_ID:
 				writer.writeObjectId(obj)
@@ -229,11 +228,17 @@ internal class BsonBasicTypeWriter {
 	}
 
 	This writeBinary(Buf binary) {
-		origPos := binary.pos
-		binary.seek(0)
-		out?.writeBuf(binary)
-		bytesWritten += binary.size
-		binary.seek(origPos)
+		if (binary.isImmutable) {
+			// we can't seek on immutable bufs
+			out?.writeBuf(binary)
+			bytesWritten += binary.size			
+		} else {
+			origPos := binary.pos
+			binary.seek(0)
+			out?.writeBuf(binary)
+			bytesWritten += binary.size
+			binary.seek(origPos)
+		}
 		return this
 	}
 

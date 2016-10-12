@@ -11,16 +11,14 @@
 ** Code objects let you re-use functions and change their parameters without re-interpolating a 
 ** Str function.
 ** 
-** Note: 'Code' is not 'const' because the 'scope' document *could* contain `Binary` data.
-** Besides, it is advantageous to change the scope / variable values.
 @Serializable
-class Code {
+const class Code {
 	
 	** JavaScript code.
-	Str code
+	const Str code
 	
 	** Default variable values to use in the function code.
-	Str:Obj? scope
+	const Str:Obj? scope
   
 	** Creates a BSON Code instance.
 	new makeCode(Str code, Str:Obj? scope := Str:Obj?[:]) {
