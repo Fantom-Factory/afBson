@@ -5,7 +5,7 @@
 ** 
 ** Binary objects with a default subtype of 'BIN_GENERIC' will be read and returned as a [Buf]`sys::Buf`. 
 @Serializable { simple=true }
-class Binary {
+const class Binary {
 
 	** BSON binary subtype.
 	** The default subtype.
@@ -30,18 +30,19 @@ class Binary {
 	
 	** The binary data 
 	@Transient
-	Buf data
-	
-	** Creates a BSON Binary instance.
+	const Buf data
+
+	** Creates a BSON Binary instance. 
+	** Note that by creating a 'Binary' instance, the data in 'Buf' will be cleared. See [Buf docs]`sys::Buf` for more info. 
 	new make(Buf data, Int subtype := BIN_GENERIC) {
 		this.subtype = subtype
-		this.data = data
+		this.data    = data.toImmutable	// note this clears the existing 'Buf' instance
 	}
 	
 	** For Fantom serialisation
 	@NoDoc
 	override Str toStr() {
-		Buf().writeObj(subtype).writeObj(this.data.dup.seek(0).toBase64).flip.readAllStr
+		Buf().writeObj(subtype).writeObj(this.data.toBase64).flip.readAllStr
 	}
 	
 	** For Fantom serialisation

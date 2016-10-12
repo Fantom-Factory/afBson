@@ -58,6 +58,6 @@ internal class TestBsonType : BsonTest {
 	}
 }
 
-internal class T_MyBin : Binary {
+internal const class T_MyBin : Binary {
 	new make(Buf data) : super(data, 0) { } 
 }

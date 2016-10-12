@@ -36,9 +36,9 @@ internal class TestSerialisation : BsonTest {
 			"string"		: "string",
 			"document"		: ["wot":"ever"],
 			"array"			: ["wot","ever"],
-			"binary-md5"	: Binary("dragon".toBuf, Binary.BIN_MD5),
-			"binary-old"	: Binary("dragon".toBuf, Binary.BIN_BINARY_OLD),
-			"binary-buf"	: "dragon".toBuf,
+			"binary-md5"	: Binary("dragon-md5".toBuf, Binary.BIN_MD5),
+			"binary-old"	: Binary("dragon-old".toBuf, Binary.BIN_BINARY_OLD),
+			"binary-buf"	: "dragon-buf".toBuf,
 			"objectId"		: objId,
 			"boolean"		: true,
 			"date"			: now,
@@ -51,10 +51,8 @@ internal class TestSerialisation : BsonTest {
 			"minKey"		: MinKey(),
 			"maxKey"		: MaxKey()
 		]
-		if (fudge) {
+		if (fudge)
 			doc.remove("binary-buf")
-			doc.remove("regex")			// http://fantom.org/sidewalk/topic/2266
-		}
 		return doc
 	}
 
@@ -64,18 +62,17 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["document"]->get("wot"), "ever")
 		verifyEq(doc["array"]->get(0), 	"wot")
 		verifyEq(doc["array"]->get(1), 	"ever")
-		verifyEq(doc["binary-md5"]->subtype,			Binary.BIN_MD5)
-		verifyEq(doc["binary-md5"]->data->readAllStr,	"dragon")
-		verifyEq(doc["binary-old"]->subtype,			Binary.BIN_BINARY_OLD)
-		verifyEq(doc["binary-old"]->data->readAllStr,	"dragon")
+		verifyEq(doc["binary-md5"]->subtype,				Binary.BIN_MD5)
+		verifyEq(doc["binary-md5"]->data->in->readAllStr,	"dragon-md5")
+		verifyEq(doc["binary-old"]->subtype,				Binary.BIN_BINARY_OLD)
+		verifyEq(doc["binary-old"]->data->in->readAllStr,	"dragon-old")
 		if (!fudge)
-			verifyEq(doc["binary-buf"]->readAllStr,			"dragon")
+			verifyEq(doc["binary-buf"]->readAllStr,			"dragon-buf")
 		verifyEq(doc["objectId"], 	objId)
 		verifyEq(doc["boolean"], 	true)
 		verifyEq(doc["date"], 		now)
 		verifyEq(doc["null"], 		null)
-		if (!fudge)
-			verifyEq(doc["regex"], 		"wotever".toRegex)
+		verifyEq(doc["regex"], 		"wotever".toRegex)
 		verifyEq(doc["code"]->code,				"func() { ... }")
 		verifyEq(doc["code"]->scope->isEmpty,	true)
 		verifyEq(doc["code_w_scope"]->code,		"func() { ... }")
@@ -93,9 +90,8 @@ internal class TestSerialisation : BsonTest {
 		BsonWriter(b.out).writeDocument(["at":atEpoch, "b4":b4Epoch])
 		doc := BsonReader(b.flip.in).readDocument
 		
-//		verifyEq(doc["at"], atEpoch)
+		verifyEq(doc["at"], atEpoch)
 		verifyEq(doc["b4"], b4Epoch)
 	}
-
 }
 
