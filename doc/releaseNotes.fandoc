@@ -3,6 +3,7 @@ Versions
 
 v1.0.2
 ======
+ - New: 'toJs()' methods for 'Binary', 'MinKey', 'MaxKey', 'ObjectId', & 'Timestamp'.
  - New: 'Timestamp.now()' returns a unique Timestamp.
  - Chg: 'Binary' and 'Code' are now 'const' classes. (Potential breaking change.)
  - Chg: Better Fantom serialization for 'Binary'.

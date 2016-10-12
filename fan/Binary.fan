@@ -33,10 +33,22 @@ const class Binary {
 	const Buf data
 
 	** Creates a BSON Binary instance. 
-	** Note that by creating a 'Binary' instance, the data in 'Buf' will be cleared. See [Buf docs]`sys::Buf` for more info. 
+	** 
+	** **Note that by creating a 'Binary' instance, the data in the given 'Buf' will be cleared.**
+	** See [Buf docs]`sys::Buf` for more info. 
 	new make(Buf data, Int subtype := BIN_GENERIC) {
 		this.subtype = subtype
 		this.data    = data.toImmutable	// note this clears the existing 'Buf' instance
+	}
+	
+	** Returns a Mongo Shell compliant, JavaScript representation of the 'Binary'. Example:
+	** 
+	**   syntax: fantom
+	**   binary.toJs  // --> BinData(0, "emVyb0Nvb2w=")
+	** 
+	** See [MongoDB Extended JSON]`https://docs.mongodb.com/manual/reference/mongodb-extended-json/#binary`.
+	Str toJs() {
+		"BinData(${subtype.toCode}, ${data.toBase64.toCode})"
 	}
 	
 	** For Fantom serialisation
