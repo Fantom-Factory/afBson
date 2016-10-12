@@ -46,7 +46,7 @@ internal class TestSerialisation : BsonTest {
 			"regex"			: "wotever".toRegex,
 			"code"			: Code("func() { ... }"),
 			"code_w_scope"	: Code("func() { ... }", ["wot":"ever"]),
-			"timestamp"		: Timestamp(3sec, 69),
+			"timestamp"		: Timestamp(6969, 69),
 			"int64"			: 666,
 			"minKey"		: MinKey(),
 			"maxKey"		: MaxKey()
@@ -80,7 +80,7 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["code"]->scope->isEmpty,	true)
 		verifyEq(doc["code_w_scope"]->code,		"func() { ... }")
 		verifyEq(doc["code_w_scope"]->scope,	Str:Obj?["wot":"ever"])
-		verifyEq(doc["timestamp"],	Timestamp(3sec, 69))
+		verifyEq(doc["timestamp"],	Timestamp(6969, 69))
 		verifyEq(doc["int64"],		666)
 		verifyEq(doc["minKey"],		MinKey())
 		verifyEq(doc["maxKey"],		MaxKey())

@@ -173,7 +173,7 @@ class BsonWriter {
 
 			case BsonType.TIMESTAMP:
 				timestamp := (Timestamp) obj
-				writer.writeInteger32(timestamp.seconds.toSec)
+				writer.writeInteger32(timestamp.seconds)
 				writer.writeInteger32(timestamp.increment)
 
 			case BsonType.INTEGER_64:
