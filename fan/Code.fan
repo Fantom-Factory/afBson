@@ -11,6 +11,7 @@
 ** Code objects let you re-use functions and change their parameters without re-interpolating a 
 ** Str function.
 ** 
+** Note that Code objects have no JavaScript representation.
 @Serializable
 const class Code {
 	
@@ -26,6 +27,13 @@ const class Code {
 		this.scope = scope
 	}
 
+	@NoDoc
+	override Str toStr() {
+		if (scope.isEmpty)
+			return code
+		return code + " " + Buf().writeObj(scope).flip.readAllStr["[sys::Str:sys::Str]".size..-1]
+	}
+	
 	** For Fantom serialisation
 	@NoDoc
 	new make(|This|f) { f(this)	}

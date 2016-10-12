@@ -16,7 +16,7 @@ using concurrent
 **  - `http://api.mongodb.org/java/2.12/org/bson/types/ObjectId.html`
 @Serializable { simple = true }
 const class ObjectId {
-	private static const AtomicInt	counter 	:= AtomicInt(0)
+	private static const AtomicInt	counterRef 	:= AtomicInt(0)
 	private static const Int 		thisMachine	:= IpAddr.local.bytes.toBase64.hash
 	// one cannot get the ProcessId in Java - http://fantom.org/sidewalk/topic/856
 	// Even the Java impl of ObjectId generates a random Int 
@@ -38,7 +38,7 @@ const class ObjectId {
 	override const Int hash 
   
 	** Creates a new 'ObjectId'.
-	new make() : this.makeAll(DateTime.now, thisMachine, thisPid, counter.incrementAndGet) { }
+	new make() : this.makeAll(DateTime.now, thisMachine, thisPid, counterRef.incrementAndGet) { }
 	
 	** Useful for testing.
 	@NoDoc
@@ -105,6 +105,16 @@ const class ObjectId {
 		noOfBytes.times |i| {
 			buf.write(val.shiftr(8 * (noOfBytes - i - 1)).and(0xFF))
 		}
+	}
+	
+	** Returns a Mongo Shell compliant, JavaScript representation of the 'ObjectId'. Example:
+	** 
+	**   syntax: fantom
+	**   objectId.toJs  // --> ObjectId("57fe499fa81320d933000001")
+	** 
+	** See [MongoDB Extended JSON]`https://docs.mongodb.com/manual/reference/mongodb-extended-json/#oid`.
+	Str toJs() {
+		"""ObjectId("${toHex}")"""
 	}
 
 	** Returns this 'ObjectId' as a 24 character hexadecimal string.
