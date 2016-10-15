@@ -51,24 +51,24 @@ Usage
 The main `BsonReader` and `BsonWriter` classes (de)serialise BSON objects to and from Fantom using the following mapping:
 
 pre>
-BSON                Fantom
+-   Fantom           BSON       -
 ---------------------------------
-ARRAY        ->    sys::List
-BINARY       -> afBson::Binary
-BOOLEAN      ->    sys::Bool
-CODE         -> afBson::Code
-CODE_W_SCOPE -> afBson::Code
-DATE         ->    sys::DateTime
-DOCUMENT     ->    sys::Map
-DOUBLE       ->    sys::Float
-INTEGER_64   ->    sys::Int
-MAX_KEY      -> afBson::MaxKey
-MIN_KEY      -> afBson::MinKey
-NULL         ->         null
-OBJECT_ID    -> afBson::ObjectId
-REGEX        ->    sys::Regex
-STRING       ->    sys::Str
-TIMESTAMP    -> afBson::Timestamp
+afBson::Binary    -> BINARY
+   sys::Bool      -> BOOLEAN
+afBson::Code      -> CODE
+afBson::Code      -> CODE_W_SCOPE
+   sys::DateTime  -> DATE
+   sys::Float     -> DOUBLE
+   sys::Int       -> INTEGER_64
+   sys::List      -> ARRAY
+   sys::Map       -> DOCUMENT
+afBson::MaxKey    -> MAX_KEY
+afBson::MinKey    -> MIN_KEY
+        null      -> NULL
+afBson::ObjectId  -> OBJECT_ID
+   sys::Regex     -> REGEX
+   sys::Str       -> STRING
+afBson::Timestamp -> TIMESTAMP
 <pre
 
 Note that the deprecated BSON constructs 'UNDEFINED', 'DB_POINTER' and 'SYMBOL' are ignored and have no Fantom representation.

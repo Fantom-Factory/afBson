@@ -27,13 +27,14 @@ const class Code {
 		this.scope = scope
 	}
 
+	// Just a little something that's nicer than the usual.
 	@NoDoc
 	override Str toStr() {
 		if (scope.isEmpty)
 			return code
 		return code + " " + Buf().writeObj(scope).flip.readAllStr["[sys::Str:sys::Str]".size..-1]
 	}
-	
+
 	** For Fantom serialisation
 	@NoDoc
 	new make(|This|f) { f(this)	}
