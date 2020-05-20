@@ -63,7 +63,7 @@ enum class BsonType {
 
 	** Throws an 'ArgErr' if invalid.
 	static new fromValue(Int value, Bool checked := true) {
-		BsonType.vals.find { it.value == value } ?: (checked ? throw ArgErr(ErrMsgs.bsonType_unknownValue(value)) : null)
+		BsonType.vals.find { it.value == value } ?: (checked ? throw ArgErr("Unknown BSON type id '${value}'") : null)
 	}
 	
 	** Determines a BSON type from the type of the given object.
@@ -99,7 +99,7 @@ enum class BsonType {
 		if (obj is MinKey)		return MIN_KEY
 		if (obj is MaxKey)		return MAX_KEY
 		
-		return null ?: (checked ? throw ArgErr(ErrMsgs.bsonType_unknownType(type)) : null)
+		return null ?: (checked ? throw ArgErr("Unknown BSON type '${type.signature}'") : null)
 	}
 	
 	** Returns true if the given 'Type' is a BSON literal. 

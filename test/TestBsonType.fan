@@ -5,7 +5,7 @@ internal class TestBsonType : BsonTest {
 		verifyEq(BsonType.fromValue( 0), BsonType.EOO)
 		verifyEq(BsonType.fromValue(10), BsonType.NULL)
 		
-		verifyErrMsg(ArgErr#, ErrMsgs.bsonType_unknownValue(23)) {
+		verifyErrMsg(ArgErr#, "Unknown BSON type id '23'") {
 			b := BsonType.fromValue(23)
 		}
 		
@@ -20,7 +20,7 @@ internal class TestBsonType : BsonTest {
 		verifyEq(BsonType.fromObj(Code("")), BsonType.CODE)
 		verifyEq(BsonType.fromObj(Code("", ["wot":"ever"])), BsonType.CODE_W_SCOPE)
 
-		verifyErrMsg(ArgErr#, ErrMsgs.bsonType_unknownType(this.typeof)) {
+		verifyErrMsg(ArgErr#, "Unknown BSON type '${this.typeof}'") {
 			b := BsonType.fromObj(this)
 		}
 

@@ -25,7 +25,7 @@ internal class TestSerialisation : BsonTest {
 	}
 	
 	Void testBadDocName() {
-		verifyErrMsg(ArgErr#, ErrMsgs.bsonType_unknownNameType(666)) {
+		verifyErrMsg(ArgErr#, "BSON Document names must be 'Str', not : sys::Int - 666") {
 			BsonWriter(Buf().out).writeDocument([666:"ever"])
 		}		
 	}

@@ -3,7 +3,7 @@
 ** 
 ** Note that `Binary` objects with a subtype of 'BIN_GENERIC' will be read and returned as a [Buf]`sys::Buf`.
 class BsonReader {
-	private static const Log 	log			:= Utils.getLog(BsonReader#)
+	private static const Log 	log			:= BsonReader#.pod.log
 	private static const Int[]	regexFlags	:= "dimsuxU".chars
 
 	** The underlying 'InStream'.
@@ -52,7 +52,7 @@ class BsonReader {
 				case BsonType.EOO:
 					bytesRead := reader.bytesRead - posMark
 					if (bytesRead < objSize)
-						log.warn(LogMsgs.bsonReader_sizeMismatch("Document", objSize - bytesRead))
+						log.warn(bsonReader_sizeMismatch("Document", objSize - bytesRead))
 					break
 
 				case BsonType.DOUBLE:
@@ -68,7 +68,7 @@ class BsonReader {
 					doc := _readDocument(reader)
 					doc.keys.each |key, index| {
 						if (key != index.toStr)
-							log.warn(LogMsgs.bsonReader_arrayIndexMismatch(key, index))
+							log.warn(bsonReader_arrayIndexMismatch(key, index))
 					}
 					val = doc.vals
 					
@@ -78,14 +78,14 @@ class BsonReader {
 					if (subtype == 2) {
 						newSize := reader.readInteger32
 						if ((newSize + 4) != size)
-							log.warn(LogMsgs.bsonReader_sizeMismatch("Binary", size - (newSize + 4)))
+							log.warn(bsonReader_sizeMismatch("Binary", size - (newSize + 4)))
 						size = newSize
 					}
 					buf := reader.readBinary(size)
 					val = (subtype == Binary.BIN_GENERIC) ? buf : Binary(buf, subtype) 
 
 				case BsonType.UNDEFINED:
-					log.warn(LogMsgs.bsonReader_deprecatedType("UNDEFINED", name))
+					log.warn(bsonReader_deprecatedType("UNDEFINED", name))
 
 				case BsonType.OBJECT_ID:
 					val = reader.readObjectId
@@ -112,13 +112,13 @@ class BsonReader {
 					if (!flags.isEmpty) {
 						notSupported := Str.fromChars(flags.chars.findAll { !regexFlags.contains(it) })
 						if (!notSupported.isEmpty)
-							log.warn(LogMsgs.bsonReader_regexFlagsNotSupported(pattern, notSupported, flags))
+							log.warn(bsonReader_regexFlagsNotSupported(pattern, notSupported, flags))
 						
 						supported := Str.fromChars(flags.chars.intersection(regexFlags))
 						if (!supported.isEmpty) {
 							oldRegex := "/${pattern}/${supported}"
 							newRegex := "(?${supported})${pattern}"
-							log.info(LogMsgs.bsonReader_convertedRegexFlags(pattern, supported, newRegex))							
+							log.info(bsonReader_convertedRegexFlags(pattern, supported, newRegex))							
 							pattern = newRegex
 						}
 					}
@@ -127,7 +127,7 @@ class BsonReader {
 				case BsonType.DB_POINTER:
 					str  := reader.readString
 					data := reader.readBinary(12)
-					log.warn(LogMsgs.bsonReader_deprecatedType("DB_POINTER", name))
+					log.warn(bsonReader_deprecatedType("DB_POINTER", name))
 
 				case BsonType.CODE:
 					code := reader.readString
@@ -135,7 +135,7 @@ class BsonReader {
 
 				case BsonType.SYMBOL:
 					symbol := reader.readString
-					log.warn(LogMsgs.bsonReader_deprecatedType("SYMBOL", name))
+					log.warn(bsonReader_deprecatedType("SYMBOL", name))
 
 				case BsonType.CODE_W_SCOPE:
 					mark := reader.bytesRead
@@ -144,7 +144,7 @@ class BsonReader {
 					scope := _readDocument(reader)
 					bytesRead := reader.bytesRead - mark
 					if (size != bytesRead)
-						log.warn(LogMsgs.bsonReader_sizeMismatch("CODE_W_SCOPE", size - bytesRead))
+						log.warn(bsonReader_sizeMismatch("CODE_W_SCOPE", size - bytesRead))
 					val = Code(code, scope)
 
 				case BsonType.INTEGER_32:
@@ -182,11 +182,31 @@ class BsonReader {
 	private Int _readInteger64(BsonBasicTypeReader reader) {
 		reader.readInteger64
 	}
+	
+	private static Str bsonReader_sizeMismatch(Str what, Int remaining) {
+		"BSON size mismatch - read ${what} with ${remaining} bytes remaining"
+	}
+
+	private static Str bsonReader_deprecatedType(Str type, Str name) {
+		"Read deprecated BSON type '${type}' for property '${name}' - returning null"
+	}
+
+	private static Str bsonReader_arrayIndexMismatch(Str key, Int index) {
+		"BSON Array index mismatach '${key}' != ${index}"
+	}
+
+	private static Str bsonReader_regexFlagsNotSupported(Str regex, Str notSupported, Str flags) {
+		"BSON Regex flag(s) '${notSupported}' are not supported by Fantom: /${regex}/${flags}"
+	}
+
+	private static Str bsonReader_convertedRegexFlags(Str oldRegex, Str flags, Str newRegex) {
+		"Converted BSON Regex flag(s) '${flags}' to embedded chars: /${oldRegex}/${flags}  --->  /${newRegex}/"
+	}
 }
 
 ** Reads basic BSON types and keeps count of the number of bytes read.
 internal class BsonBasicTypeReader {
-	private static const Log log	:= Utils.getLog(BsonBasicTypeReader#)
+	private static const Log log	:= BsonBasicTypeReader#.pod.log
 
 	Int bytesRead
 	
@@ -245,12 +265,16 @@ internal class BsonBasicTypeReader {
 	private Void readNull(Str str) {
 		nul := readByte
 		if (nul != 0)
-			log.warn(LogMsgs.bsonReader_nullTerminatorNotZero(nul, str))
+			log.warn(bsonReader_nullTerminatorNotZero(nul, str))
 	}
 	
 	private Obj? read(Int bytes, |Obj?->Obj| func) {
 		val := func(null)
 		bytesRead += bytes
 		return val
+	}
+	
+	private static Str bsonReader_nullTerminatorNotZero(Int terminator, Str str) {
+		"BSON string terminator was not zero, but '0x${terminator.toHex}' for string : ${str}"
 	}
 }
