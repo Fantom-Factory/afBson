@@ -63,7 +63,7 @@ const class ObjectId {
 			pid			:= hex[14..<18].toInt(16)
 			inc			:= hex[18..<24].toInt(16)
 			timeInSecs	:= Buf(4).writeI4(timeFromStr).flip.readS4	// re-read as a signed number
-			timestamp	:= Utils.fromUnixEpoch(timeInSecs * 1000)
+			timestamp	:= DateTime.fromJava(timeInSecs * 1000, TimeZone.utc, false)
 			return ObjectId(timestamp, machine, pid, inc)
 
 		} catch (Err e) {
@@ -77,7 +77,7 @@ const class ObjectId {
 	static new fromStream(InStream in) {
 		origEndian 	:= in.endian
 		in.endian 	= Endian.big
-		timestamp	:= Utils.fromUnixEpoch(in.readS4 * 1000)
+		timestamp	:= DateTime.fromJava(in.readS4 * 1000, TimeZone.utc, false)
 		machine		:= in.readBufFully(null, 3).toHex.toInt(16)
 		pid			:= in.readU2
 		inc			:= in.readBufFully(null, 3).toHex.toInt(16)

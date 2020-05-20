@@ -6,7 +6,7 @@
 ** 
 ** This is only of concern if other, non Fantom drivers, are writing to the database.
 class BsonWriter {
-	private static const Log log	:= Utils.getLog(BsonReader#)
+	private static const Log log	:= BsonReader#.pod.log
 
 	private Str[] 	nameStack		:= [,]
 	private Str:Int sizeCache		:= [:]
@@ -108,7 +108,7 @@ class BsonWriter {
 					// because with [:] it's far too easy to declare Obj maps without knowing it
 					// if I were to check the paramaterized Map type, people would soon hate me!
 					if (name isnot Str)
-						throw ArgErr(ErrMsgs.bsonType_unknownNameType(name))
+						throw ArgErr("BSON Document names must be 'Str', not : ${name.typeof.signature} - ${name}")
 					
 					nameStack.push(name)
 					valType := BsonType.fromObj(val, true)
