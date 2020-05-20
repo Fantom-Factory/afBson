@@ -8,13 +8,13 @@ class Build : BuildPod {
 		version = Version("1.1.1")
 
 		meta = [
-			"pod.displayName"	: "Bson",
-			"repo.tags"			: "database",
-			"repo.public"		: "true"		
+			"pod.dis"		: "Bson",
+			"repo.tags"		: "database",
+			"repo.public"	: "true"
 		]
 
 		depends = [
-			"sys        1.0.69 - 1.0", 
+			"sys        1.0.69 - 1.0",
 			"inet       1.0.69 - 1.0",
 			"concurrent 1.0.69 - 1.0"	// for ObjectId & Timestamp
 		]
