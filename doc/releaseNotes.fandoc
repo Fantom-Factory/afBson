@@ -1,6 +1,11 @@
 Versions
 ********
 
+v1.1.2
+======
+ - Chg: 'DateTimes' are returned in a predictable UTC timezone, not a local / current timezone.
+ - Chg: Removed some internal classes.
+
 v1.1.0
 ======
  - New: 'toJs()' methods for 'Binary', 'MinKey', 'MaxKey', 'ObjectId', & 'Timestamp'.

@@ -16,8 +16,8 @@ using concurrent
 **     return 69
 ** }
 ** <pre
-internal const class Synchronized {
-	private static const Log	log 	:= Synchronized#.pod.log
+internal const class BsonSynchronized {
+	private static const Log	log 	:= BsonSynchronized#.pod.log
 	
 	** The 'Actor' used to process all sync and async calls.
 	@NoDoc  const Actor 		actor
