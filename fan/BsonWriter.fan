@@ -142,6 +142,7 @@ class BsonWriter {
 				writer.writeByte(obj ? 0x01 : 0x00)
 
 			case BsonType.DATE:
+				// FIXME use TimeZone.utc - but don't loose data when in BST!
 				millisecs := ((DateTime) obj).toJava
 				writer.writeInteger64(millisecs)
 

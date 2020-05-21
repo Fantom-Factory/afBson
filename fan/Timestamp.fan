@@ -49,10 +49,6 @@ const class Timestamp {
 		"""Timestamp(${seconds}, ${increment})"""
 	}
 
-	static Void main(Str[] args) {
-		Timestamp.now.toJs { echo(it) }
-	}
-	
 	@NoDoc
 	override Str toStr() {
 		"${seconds} + ${increment}"

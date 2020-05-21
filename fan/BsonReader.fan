@@ -94,7 +94,8 @@ class BsonReader {
 					val = (reader.readByte == 0x01)
 
 				case BsonType.DATE:
-					val = DateTime.fromJava(reader.readInteger64, TimeZone.utc, false) 
+					// FIXME use TimeZone.utc - but don't loose data when in BST! (change this first) & don't forget ObjID!
+					val = DateTime.fromJava(reader.readInteger64, TimeZone.cur, false) 
 
 				case BsonType.NULL:
 					val = null
@@ -267,6 +268,7 @@ internal class BsonBasicTypeReader {
 			log.warn(bsonReader_nullTerminatorNotZero(nul, str))
 	}
 	
+	@Deprecated	// optimise the func out!
 	private Obj? read(Int bytes, |Obj?->Obj| func) {
 		val := func(null)
 		bytesRead += bytes
