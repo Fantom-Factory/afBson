@@ -48,8 +48,8 @@ internal class TestSerialisation : BsonTest {
 			"code_w_scope"	: Code("func() { ... }", ["wot":"ever"]),
 			"timestamp"		: Timestamp(6969, 69),
 			"int64"			: 666,
-			"minKey"		: MinKey(),
-			"maxKey"		: MaxKey()
+			"minKey"		: MinKey.val,
+			"maxKey"		: MaxKey.val
 		]
 		if (fudge)
 			doc.remove("binary-buf")
@@ -79,8 +79,8 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["code_w_scope"]->scope,	Str:Obj?["wot":"ever"])
 		verifyEq(doc["timestamp"],	Timestamp(6969, 69))
 		verifyEq(doc["int64"],		666)
-		verifyEq(doc["minKey"],		MinKey())
-		verifyEq(doc["maxKey"],		MaxKey())
+		verifyEq(doc["minKey"],		MinKey.val)
+		verifyEq(doc["maxKey"],		MaxKey.val)
 		
 		dat := doc["date"] as DateTime
 		if (!fudge)

@@ -2,9 +2,22 @@
 ** (BSON Type) - 
 ** 'MinKey' is *less than* any other value of any type. 
 ** This can be useful for always returning certain documents first (or last). 
-@Serializable
-const class MinKey { 
+@Serializable { simple = true }
+final const class MinKey {
 
+	** Singleton value.
+	static const MinKey defVal := MinKey()
+
+	** Returns the singleton 'defVal' instance.
+	static MinKey val() { defVal }
+	
+	** None shall make!
+	private new make() { }
+	
+	** For simple serialisation.
+	@NoDoc
+	static MinKey fromStr(Str str) { val }
+	
 	** Returns a Mongo Shell compliant, JavaScript representation of 'MinKey'. Example:
 	** 
 	**   syntax: fantom
@@ -34,9 +47,22 @@ const class MinKey {
 ** (BSON Type) - 
 ** 'MaxKey' is *greater than* any other value of any type. 
 ** This can be useful for always returning certain documents last (or first). 
-@Serializable
-const class MaxKey {
+@Serializable { simple = true }
+final const class MaxKey {
+
+	** Singleton value.
+	static const MaxKey defVal := MaxKey()
+
+	** Returns the singleton 'defVal' instance.
+	static MaxKey val() { defVal }
 	
+	** None shall make!
+	private new make() { }
+
+	** For simple serialisation.
+	@NoDoc
+	static MaxKey fromStr(Str str) { val }
+
 	** Returns a Mongo Shell compliant, JavaScript representation of 'MaxKey'. Example:
 	** 
 	**   syntax: fantom
