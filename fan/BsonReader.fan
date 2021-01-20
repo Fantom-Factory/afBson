@@ -238,27 +238,39 @@ internal class BsonBasicTypeReader {
 	}
 	
 	Int readByte() {
-		read(1) { in.readU1 }
+		val := in.readU1
+		bytesRead += 1
+		return val
 	}
 
 	Buf readBinary(Int size) {
-		read(size) { in.readBufFully(null, size) }
+		val := in.readBufFully(null, size)
+		bytesRead += size
+		return val
 	}
 
 	Float readDouble() {
-		read(8) { in.readF8 }
+		val := in.readF8
+		bytesRead += 8
+		return val
 	}
 
 	Int readInteger32() {
-		read(4) { in.readS4 }
+		val := in.readS4
+		bytesRead += 4
+		return val
 	}
 
 	Int readInteger64() {
-		read(8) { in.readS8 }
+		val := in.readS8
+		bytesRead += 8
+		return val
 	}
 
 	ObjectId readObjectId() {
-		read(12) { ObjectId(in) }
+		val := ObjectId(in)
+		bytesRead += 12
+		return val
 	}
 
 	** Eat the null terminator
@@ -266,15 +278,7 @@ internal class BsonBasicTypeReader {
 		nul := readByte
 		if (nul != 0)
 			log.warn(bsonReader_nullTerminatorNotZero(nul, str))
-	}
-	
-	@Deprecated	// optimise the func out!
-	private Obj? read(Int bytes, |Obj?->Obj| func) {
-		val := func(null)
-		bytesRead += bytes
-		return val
-	}
-	
+	}	
 	private static Str bsonReader_nullTerminatorNotZero(Int terminator, Str str) {
 		"BSON string terminator was not zero, but '0x${terminator.toHex}' for string : ${str}"
 	}
