@@ -15,7 +15,7 @@ using concurrent
 **  - `http://docs.mongodb.org/manual/reference/object-id/`
 **  - `http://api.mongodb.org/java/2.12/org/bson/types/ObjectId.html`
 @Serializable { simple = true }
-const class ObjectId {
+final const class ObjectId {
 	private static const AtomicInt	counterRef 	:= AtomicInt(0)
 	private static const Int 		thisMachine	:= IpAddr.local.bytes.toBase64.hash
 	// one cannot get the ProcessId in Java - http://fantom.org/sidewalk/topic/856

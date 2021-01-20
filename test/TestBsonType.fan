@@ -5,7 +5,7 @@ internal class TestBsonType : BsonTest {
 		verifyEq(BsonType.fromValue( 0), BsonType.EOO)
 		verifyEq(BsonType.fromValue(10), BsonType.NULL)
 		
-		verifyErrMsg(ArgErr#, "Unknown BSON type id '23'") {
+		verifyErrMsg(ArgErr#, "Unknown BSON value ID: 23") {
 			b := BsonType.fromValue(23)
 		}
 		
@@ -43,21 +43,16 @@ internal class TestBsonType : BsonTest {
 	}
 	
 	Void testIsBsonLiteral() {
-		verify(BsonType.isBsonLiteral(Int#))
-		verify(BsonType.isBsonLiteral(Str#))
-		verify(BsonType.isBsonLiteral(Code#))
-		verify(BsonType.isBsonLiteral(Binary#))
-		verify(BsonType.isBsonLiteral(Buf#))
-		verify(BsonType.isBsonLiteral(null))
-		verify(BsonType.isBsonLiteral(T_MyBin#))
+		verifyTrue	(BsonType.isBsonLiteral(Int#))
+		verifyTrue	(BsonType.isBsonLiteral(Str#))
+		verifyTrue	(BsonType.isBsonLiteral(Code#))
+		verifyTrue	(BsonType.isBsonLiteral(Binary#))
+		verifyTrue	(BsonType.isBsonLiteral(Buf#))
+		verifyTrue	(BsonType.isBsonLiteral(null))
 
-		verifyFalse(BsonType.isBsonLiteral(List#))
-		verifyFalse(BsonType.isBsonLiteral(Map#))
-		verifyFalse(BsonType.isBsonLiteral(Str:Obj?#))
-		verifyFalse(BsonType.isBsonLiteral(Str[]#))
+		verifyFalse	(BsonType.isBsonLiteral(List#))
+		verifyFalse	(BsonType.isBsonLiteral(Map#))
+		verifyFalse	(BsonType.isBsonLiteral(Str:Obj?#))
+		verifyFalse	(BsonType.isBsonLiteral(Str[]#))
 	}
-}
-
-internal const class T_MyBin : Binary {
-	new make(Buf data) : super(data, 0) { } 
 }

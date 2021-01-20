@@ -4,7 +4,7 @@ using concurrent
 ** Timestamps are used internally by MongoDB's replication. 
 ** You can see them in their natural habitat by querying 'local.main.$oplog'.
 @Serializable
-const class Timestamp {
+final const class Timestamp {
 	
 	private static const AtomicInt	counterRef 	:= AtomicInt(0)
 	private static const AtomicInt	lastNowRef 	:= AtomicInt(DateTime.now(1sec).toJava / 1000)
@@ -24,6 +24,8 @@ const class Timestamp {
 	
 	** Returns a unique 'Timestamp' representing now.
 	static Timestamp now() {
+		// I was contemplating using "DateTime.nowUnique()" somehow,
+		// but you still run into race conditions requiring a sync block
 		sync.synchronized |->Timestamp| {
 			now := DateTime.now(1sec).toJava / 1000
 			inc := counterRef.incrementAndGet
@@ -46,7 +48,7 @@ const class Timestamp {
 	** 
 	** See [MongoDB Extended JSON]`https://docs.mongodb.com/manual/reference/mongodb-extended-json/#timestamp`.
 	Str toJs() {
-		"""Timestamp(${seconds}, ${increment})"""
+		"Timestamp(${seconds}, ${increment})"
 	}
 
 	@NoDoc

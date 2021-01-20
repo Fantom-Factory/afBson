@@ -13,7 +13,7 @@
 ** 
 ** Note that Code objects have no JavaScript representation.
 @Serializable
-const class Code {
+final const class Code {
 	
 	** JavaScript code.
 	const Str code

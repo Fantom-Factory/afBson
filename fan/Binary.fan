@@ -5,7 +5,7 @@
 ** 
 ** Binary objects with a default subtype of 'BIN_GENERIC' will be read and returned as a [Buf]`sys::Buf`. 
 @Serializable { simple=true }
-const class Binary {
+final const class Binary {
 
 	** BSON binary subtype.
 	** The default subtype.
