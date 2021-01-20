@@ -8,7 +8,7 @@ v1.1.2
  - Chg: Converted 'MinKey' and 'MaxKey' to singleton classes. *(Potential breaking change.)*
  - Chg: Optimised 'BsonReader', 'BsonWriter', and 'BsonType'.
  - Chg: Refactored out / removed some internal classes.
- - Chg: BSON types are now 'final' - for speedy checks by BsonType.
+ - Chg: BSON types are now 'final' - for speedy checks by BsonType. *(Potential breaking change.)*
 
 v1.1.0
 ======
