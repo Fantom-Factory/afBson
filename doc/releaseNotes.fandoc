@@ -3,8 +3,10 @@ Versions
 
 v1.1.2
 ======
+ - New: 'BsonReader.tz' field to set the time zone in which 'DateTimes' are returned.
  - Chg: 'DateTimes' are returned in a predictable UTC timezone, not a local / current timezone.
- - Chg: Removed some internal classes.
+ - Chg: Refactored out / removed some internal classes.
+ - Chg: Optimised 'BsonReader'.
 
 v1.1.0
 ======

@@ -6,6 +6,12 @@ class BsonReader {
 	private static const Log 	log			:= BsonReader#.pod.log
 	private static const Int[]	regexFlags	:= "dimsuxU".chars
 
+	** The 'TimeZone' in which all 'DateTimes' are returned in.
+	** 
+	** This does not change the *instant* in the date time continuum, just time zone it is reported in.
+	** This lets a stored date time of '12 Dec 2012 18:00 UTC' be returned as '12 Dec 2012 13:00 New_York'.
+	TimeZone tz	:= TimeZone.cur
+	
 	** The underlying 'InStream'.
 	InStream in {
 		private set
@@ -95,7 +101,7 @@ class BsonReader {
 
 				case BsonType.DATE:
 					// FIXME use TimeZone.utc - but don't loose data when in BST! (change this first) & don't forget ObjID!
-					val = DateTime.fromJava(reader.readInteger64, TimeZone.cur, false) 
+					val = DateTime.fromJava(reader.readInteger64, tz, false) 
 
 				case BsonType.NULL:
 					val = null

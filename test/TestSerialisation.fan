@@ -2,7 +2,7 @@
 internal class TestSerialisation : BsonTest {
 	
 	private ObjectId objId 	:= ObjectId()
-	private DateTime now	:= DateTime.now
+	private DateTime now	:= DateTime.now.toTimeZone(TimeZone("London"))
 	
 	// test regex with (?:xui) options - see if flags are part of regex
 	
@@ -10,7 +10,7 @@ internal class TestSerialisation : BsonTest {
 		b := Buf()
 
 		BsonWriter(b.out).writeDocument(bsonValueMap)
-		doc := BsonReader(b.flip.in).readDocument
+		doc := BsonReader(b.flip.in) { it.tz = TimeZone("New_York") }.readDocument
 		
 		verifyBsonValueMap(doc)
 	}
@@ -81,6 +81,14 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["int64"],		666)
 		verifyEq(doc["minKey"],		MinKey())
 		verifyEq(doc["maxKey"],		MaxKey())
+		
+		dat := doc["date"] as DateTime
+		if (!fudge)
+		verifyEq(dat.tz.name, "New_York")
+		verifyEq(now.tz.name, "London")
+		
+		// DateTime.equals() ignores TimeZone, but ensures the *instants* / ticks are equal.
+		verifyEq(dat, now)
 	}
 	
 	Void testQuirkyDateTimeFromJava() {
@@ -94,4 +102,3 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["b4"], b4Epoch)
 	}
 }
-
