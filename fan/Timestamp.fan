@@ -8,7 +8,7 @@ const class Timestamp {
 	
 	private static const AtomicInt	counterRef 	:= AtomicInt(0)
 	private static const AtomicInt	lastNowRef 	:= AtomicInt(DateTime.now(1sec).toJava / 1000)
-	private static const BsonSynchronized sync	:= BsonSynchronized(ActorPool() { it.name=Timestamp#.qname; it.maxThreads=1; })
+	private static const TimestampSync sync		:= TimestampSync(ActorPool() { it.name=Timestamp#.qname; it.maxThreads=1; })
 	
 	** The number of seconds since the UNIX epoch.
 	const Int seconds
