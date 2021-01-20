@@ -72,10 +72,6 @@ class BsonReader {
 
 				case BsonType.ARRAY:
 					doc := _readDocument(reader)
-					doc.keys.each |key, index| {
-						if (key != index.toStr)
-							log.warn(bsonReader_arrayIndexMismatch(key, index))
-					}
 					val = doc.vals
 					
 				case BsonType.BINARY:
@@ -100,7 +96,6 @@ class BsonReader {
 					val = (reader.readByte == 0x01)
 
 				case BsonType.DATE:
-					// FIXME use TimeZone.utc - but don't loose data when in BST! (change this first) & don't forget ObjID!
 					val = DateTime.fromJava(reader.readInteger64, tz, false) 
 
 				case BsonType.NULL:
@@ -165,10 +160,10 @@ class BsonReader {
 					val = reader.readInteger64
 
 				case BsonType.MIN_KEY:
-					val = MinKey()
+					val = MinKey.val
 
 				case BsonType.MAX_KEY:
-					val = MaxKey()
+					val = MaxKey.val
 			}
 			
 			if (name != null)
@@ -197,10 +192,6 @@ class BsonReader {
 		"Read deprecated BSON type '${type}' for property '${name}' - returning null"
 	}
 
-	private static Str bsonReader_arrayIndexMismatch(Str key, Int index) {
-		"BSON Array index mismatach '${key}' != ${index}"
-	}
-
 	private static Str bsonReader_regexFlagsNotSupported(Str regex, Str notSupported, Str flags) {
 		"BSON Regex flag(s) '${notSupported}' are not supported by Fantom: /${regex}/${flags}"
 	}
@@ -216,7 +207,7 @@ internal class BsonBasicTypeReader {
 
 	Int bytesRead
 	
-	private InStream	in
+	private InStream				in
 	private BsonBasicTypeReader?	reader
 	
 	new make(InStream in) {
@@ -228,9 +219,8 @@ internal class BsonBasicTypeReader {
 	}
 
 	Str readCString() {
-		str := in.readStrToken(null) { it == 0 } ?: throw IOErr("Could not read CString, End Of Stream.")
-		bytesRead += str.toBuf.size
-		readNull(str)
+		str := in.readNullTerminatedStr(null)
+		bytesRead += utf8Size(str) + 1
 		return str
 	}
 	
@@ -284,7 +274,22 @@ internal class BsonBasicTypeReader {
 		nul := readByte
 		if (nul != 0)
 			log.warn(bsonReader_nullTerminatorNotZero(nul, str))
-	}	
+	}
+
+	** Nicked from HttpClient
+	private static Int utf8Size(Str str) {
+		size := 0
+		chars := str.chars
+		for (i := 0; i < chars.size; ++i) {
+			ch := chars[i]
+			if (ch < 0x0080)	size += 1; else
+			if (ch < 0x0800)	size += 2; else
+			if (ch < 0x8000)	size += 3; else
+			throw Err("Unsupported UTF-8 char: 0x${ch.toHex(4).upper}")
+		}
+		return size
+	}
+	
 	private static Str bsonReader_nullTerminatorNotZero(Int terminator, Str str) {
 		"BSON string terminator was not zero, but '0x${terminator.toHex}' for string : ${str}"
 	}

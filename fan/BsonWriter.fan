@@ -28,18 +28,30 @@ class BsonWriter {
 	
 	** Serialises the given BSON Document to the underlying 'OutStream'.
 	This writeDocument([Obj:Obj?]? document) {
-		(BsonWriter) cache |->Obj?| {
-			if (document != null)
-				_writeObject(document, BsonBasicTypeWriter(out))
+		if (document == null)
 			return this
+		
+		try {
+			_writeObject(document, BsonBasicTypeWriter(out))
+			return this
+		} finally {
+			// clear nameStack in case we're exiting use to an Err and it wasn't popped 
+			nameStack.clear
+			sizeCache.clear
 		}
 	}
 
 	** Calculates the size (in bytes) of the given BSON Document should it be serialised.
 	** Nothing is written to the 'OutStream'.
 	Int sizeDocument([Obj:Obj?]? document) {
-		cache |->Int| {
-			(document == null) ? 0 : _writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
+		if (document == null)
+			return 0
+
+		try return _writeObject(document, BsonBasicTypeWriter(null)).bytesWritten
+		finally {
+			// clear nameStack in case we're exiting use to an Err and it wasn't popped 
+			nameStack.clear
+			sizeCache.clear
 		}
 	}
 	
@@ -120,7 +132,9 @@ class BsonWriter {
 				writer.writeByte(BsonType.EOO.value)
 
 			case BsonType.ARRAY:
-			    doc := Str:Obj?[:] { ordered = true }.addList(obj) |v, i->Str| { i.toStr }
+			    doc := Str:Obj?[:]
+			    doc.ordered = true
+			    doc.addList(obj, #rocket01.func)
 			    _writeObject(doc, writer)
 
 			case BsonType.BINARY:
@@ -188,15 +202,7 @@ class BsonWriter {
 		return writer
 	}
 	
-	Obj? cache(|->Obj?| c) {
-		try {
-			return c.call()
-		} finally {
-			// clear nameStack in case we're exiting use to an Err and it wasn't popped 
-			nameStack.clear
-			sizeCache.clear
-		}
-	}
+	private static Str rocket01(Obj? v, Int i) { i.toStr }
 }
 
 

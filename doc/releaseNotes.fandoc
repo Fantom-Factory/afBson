@@ -4,17 +4,19 @@ Versions
 v1.1.2
 ======
  - New: 'BsonReader.tz' field to set the time zone in which 'DateTimes' are returned.
- - Chg: 'DateTimes' are returned in a predictable UTC timezone, not a local / current timezone.
+ - New: 'BsonType.fromType()'.
+ - Chg: Converted 'MinKey' and 'MaxKey' to singleton classes. *(Potential breaking change.)*
+ - Chg: Optimised 'BsonReader', 'BsonWriter', and 'BsonType'.
  - Chg: Refactored out / removed some internal classes.
- - Chg: Optimised 'BsonReader'.
+ - Chg: BSON types are now 'final' - for speedy checks by BsonType.
 
 v1.1.0
 ======
  - New: 'toJs()' methods for 'Binary', 'MinKey', 'MaxKey', 'ObjectId', & 'Timestamp'.
  - New: 'Timestamp.now()' returns a unique Timestamp.
- - Chg: 'Binary' and 'Code' are now 'const' classes. (Breaking change.)
- - Chg: Better Fantom serialization for 'Binary'. (Breaking change.)
- - Chg: Changed 'Timestamp.seconds' from a 'Duration' to an 'Int'. (Breaking change.)
+ - Chg: 'Binary' and 'Code' are now 'const' classes. *(Breaking change.)*
+ - Chg: Better Fantom serialization for 'Binary'. *(Breaking change.)*
+ - Chg: Changed 'Timestamp.seconds' from a 'Duration' to an 'Int'. *(Breaking change.)*
  - Chg: Better IP hash in 'ObjectId' for IP6 addresses.
 
 v1.0.0

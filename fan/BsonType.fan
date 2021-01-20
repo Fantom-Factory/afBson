@@ -56,6 +56,23 @@ enum class BsonType {
 	** The Fantom 'Type' (if any) this BSON type maps to.
 	const Type? type
 
+	private static const Int:BsonType	valueMap
+	private static const Type:BsonType	typeMap
+
+	static {
+		// a static ctor in an enum is pretty dodgy,
+		// but having a valueMap / typeMap is the most efficient way to code fromValue() / isBsonLiteral()
+		valueMap :=  Int:BsonType[:]
+		typeMap	 := Type:BsonType[:]
+		BsonType.vals.each {
+			valueMap[it.value] = it
+			if (it.type != null)
+				typeMap[it.type] = it
+		}
+		BsonType.valueMap = valueMap
+		BsonType.typeMap  = typeMap
+	}
+	
 	private new make(Int value, Type? type) {
 		this.value	= value
 		this.type	= type
@@ -63,32 +80,37 @@ enum class BsonType {
 
 	** Throws an 'ArgErr' if invalid.
 	static new fromValue(Int value, Bool checked := true) {
-		BsonType.vals.find { it.value == value } ?: (checked ? throw ArgErr("Unknown BSON type id '${value}'") : null)
+		valueMap[value] ?: (checked ? throw ArgErr("Unknown BSON value ID: ${value}") : null)
+	}
+	
+	** Throws an 'ArgErr' if invalid.
+	static new fromType(Type type, Bool checked := true) {
+		typeMap[type] ?: (checked ? throw ArgErr("Unknown BSON type: ${type}") : null)
 	}
 	
 	** Determines a BSON type from the type of the given object.
 	** Throws an 'ArgErr' if invalid.
 	** 
-	** 'Obj' is needed (as oppose to just the type) because a `Code` instance may be mapped to 
+	** 'Obj' may be requuired (as oppose to just the Type) because a `Code` instance may be mapped to 
 	** either 'CODE' or 'CODE_W_SCOPE'.
 	static new fromObj(Obj? obj, Bool checked := true) {
 		type := obj?.typeof?.toNonNullable
 			
 		// switch on final / native types
 		switch (type) {
-			case Float#:	return DOUBLE
-			case Str#:		return STRING
-			case Bool#:		return BOOLEAN
-			case DateTime#:	return DATE
-			case null:		return NULL
-			case Regex#:	return REGEX
-			case Int#:		return INTEGER_64
+			case Float#:		return DOUBLE
+			case Str#:			return STRING
+			case Bool#:			return BOOLEAN
+			case DateTime#:		return DATE
+			case null:			return NULL
+			case Regex#:		return REGEX
+			case Int#:			return INTEGER_64
 		}
 
 		// can't switch on parameterized types
-		if (obj is List)	return ARRAY
+		if (obj is List)		return ARRAY
 		// a controversial decision - we check individual key types, not the map key type
-		if (obj is Map)		return DOCUMENT	
+		if (obj is Map)			return DOCUMENT	
 
 		// test non-final types
 		if (obj is Binary)		return BINARY
@@ -113,8 +135,12 @@ enum class BsonType {
 	**   BsonType.isBsonLiteral(Str:Obj?#) // --> false
 	static Bool isBsonLiteral(Type? type) {
 		if (type == null)		return true
+		
+		fanType := fromType(type, false)
+		if (fanType != null && fanType != DOCUMENT && fanType != ARRAY)
+			return true
+
 		if (type.fits(Buf#))	return true
-		fanType := BsonType.vals.find { type.fits(it.type ?: Void#) }?.type
-		return fanType != null && fanType != Map# && fanType != List#
+		return false
 	}
 }
