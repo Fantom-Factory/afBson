@@ -1,74 +1,72 @@
-using inet
-using concurrent
+using concurrent::AtomicInt
 
 ** (BSON Type) - 
 ** A globally unique identifier for MongoDB objects.
 **
-** Consists of 12 bytes, divided as follows:
+** The ObjectID BSON type is a 12-byte value consisting of three different portions (fields):
+**  - a 4-byte value representing the seconds since the Unix epoch in the highest order bytes
+**  - a 5-byte random number unique to a machine and process
+**  - a 3-byte counter, starting with a random value
 ** 
 ** pre>
-** | 0  1  2  3 | 4  5  6 | 7  8 | 9 10 11
-** | timestamp  | machine | pid  | inc
+**   4 byte timestamp    5 byte process unique   3 byte counter
+** |<----------------->|<---------------------->|<------------>|
+** [----|----|----|----|----|----|----|----|----|----|----|----]
+** 0                   4                   8                   12
 ** <pre
 ** 
 ** @See
-**  - `http://docs.mongodb.org/manual/reference/object-id/`
-**  - `http://api.mongodb.org/java/2.12/org/bson/types/ObjectId.html`
+**  - `https://github.com/mongodb/specifications/blob/master/source/objectid.rst`
+** 
 @Serializable { simple = true }
 final const class ObjectId {
-	private static const AtomicInt	counterRef 	:= AtomicInt(0)
-	private static const Int 		thisMachine	:= IpAddr.local.bytes.toBase64.hash
+	private static const AtomicInt	counterRef 	:= AtomicInt(Int.random)
 	// one cannot get the ProcessId in Java - http://fantom.org/sidewalk/topic/856
 	// Even the Java impl of ObjectId generates a random Int 
-	private static const Int 		thisPid		:= Int.random
+	private static const Int 		thisPid		:= Int.random.and(0xFF_FF_FF_FF_FF)
 	
 	** The creation timestamp with a 1 second accuracy.
-	const DateTime	timestamp
+	const Int	ts
 	
-	** A 4-byte machine identifier, usually the IP address.
-	const Int		machine
+	** A 5-byte process id that this instance was created under.
+	const Int 	pid
 	
-	** A 2-byte process id that this instance was created under.
-	const Int 		pid
-	
-	** A 3-byte 'inc' value.
-	const Int 		inc
+	** A 3-byte coutner value.
+	const Int 	inc
 	
 	@NoDoc
 	override const Int hash 
   
 	** Creates a new 'ObjectId'.
-	new make() : this.makeAll(DateTime.now, thisMachine, thisPid, counterRef.incrementAndGet) { }
+	new make() {
+		this.ts		= Duration.nowTicks / 1sec.ticks
+		this.pid	= thisPid
+		this.inc	= counterRef.incrementAndGet.and(0xFF_FF_FF)
+		this.hash	= ts.shiftl(32) + pid.and(0xFF).shiftl(24) + inc
+	}
 	
 	** Useful for testing.
 	@NoDoc
-	new makeAll(DateTime timestamp, Int machine, Int pid, Int inc) {
-		this.timestamp	= timestamp.floor(1sec)
-		this.machine	= machine.and(0xFFFFFF)
-		this.pid 		= pid.and(0xFFFF)
-		this.inc 		= inc.and(0xFFFFFF)
-		this.hash		= [this.timestamp.toJava, this.machine, this.pid, this.inc].reduce(42) |Int result, val -> Int| {
-			return (37 * result) + val
-		}
+	new makeAll(Int ts, Int pid, Int inc) {
+		this.ts		= ts .and(0xFF_FF_FF_FF)
+		this.pid 	= pid.and(0xFF_FF_FF_FF_FF)
+		this.inc 	= inc.and(0xFF_FF_FF)
+		this.hash	= ts .shiftl(32) + pid.and(0xFF).shiftl(24) + inc
 	}
 
 	** Create an 'ObjectId' from a hex string.
 	static new fromStr(Str hex, Bool checked := true) {
-		if (hex.size != 24 || !hex.all { it.isAlphaNum })
+		if (hex.size != 24)
 			return null ?: (checked ? throw ParseErr("Could not parse ObjectId: ${hex}") : null)
 
 		try {
-			timeFromStr	:= hex[ 0..< 8].toInt(16)
-			machine		:= hex[ 8..<14].toInt(16)
-			pid			:= hex[14..<18].toInt(16)
-			inc			:= hex[18..<24].toInt(16)
-			timeInSecs	:= Buf(4).writeI4(timeFromStr).flip.readS4	// re-read as a signed number
-			timestamp	:= DateTime.fromJava(timeInSecs * 1000, TimeZone.cur, false)
-			return ObjectId(timestamp, machine, pid, inc)
+			ts	:= hex[ 0..< 8].toInt(16)
+			pid	:= hex[ 8..<18].toInt(16)
+			inc	:= hex[18..<24].toInt(16)
+			return ObjectId(ts, pid, inc)
 
-		} catch (Err e) {
+		} catch (Err e)
 			return null ?: (checked ? throw ParseErr("Could not parse ObjectId: ${hex}", e) : null)
-		}
 	}
 
 	** Reads an 'ObjectId' from the given stream.
@@ -76,15 +74,19 @@ final const class ObjectId {
 	** Note the stream is **not** closed.
 	static new fromStream(InStream in) {
 		origEndian 	:= in.endian
-		in.endian 	= Endian.big
-		timestamp	:= DateTime.fromJava(in.readS4 * 1000, TimeZone.cur, false)
-		machine		:= in.readBufFully(null, 3).toHex.toInt(16)
-		pid			:= in.readU2
-		inc			:= in.readBufFully(null, 3).toHex.toInt(16)
+		in.endian 	 = Endian.big
+		ts			:= in.readU4
+		pid			:= in.readU4.shiftl(8) + in.read
+		inc			:= in.readU2.shiftl(8) + in.read
 		in.endian 	= origEndian
-		return ObjectId(timestamp, machine, pid, inc)
+		return ObjectId(ts, pid, inc)
 	}
 
+	** Converts the 'ts' field into a Fantom 'DateTime' instance.
+	DateTime timestamp(TimeZone tz := TimeZone.cur) {
+		DateTime.fromJava(ts * 1000, tz, true)
+	}
+	
 	** Converts this instance into a 24 character hexadecimal string representation.
 	Str toHex() {
 		toBuf.toHex
@@ -94,19 +96,21 @@ final const class ObjectId {
 	** The returned buffer is positioned at the start and is ready to read.
 	Buf toBuf() {
 		buf := Buf(12)
-		writeToBuf(buf, timestamp.toJava / 1000, 4)
-		writeToBuf(buf, machine, 3)
-		writeToBuf(buf, pid, 2)
-		writeToBuf(buf, inc, 3)
+		writeToStream(buf.out)
 		return buf.flip
 	}
-
-	private static Void writeToBuf(Buf buf, Int val, Int noOfBytes) {
-		noOfBytes.times |i| {
-			buf.write(val.shiftr(8 * (noOfBytes - i - 1)).and(0xFF))
-		}
-	}
 	
+	** Writes this 'ObjectId' to the given 'OutStream'.
+	OutStream writeToStream(OutStream out) {
+		origEndian 	:= out.endian
+		out.endian	= Endian.big
+		out.writeI4(ts)
+		out.writeI4(pid.shiftr(8)).write(pid)
+		out.writeI2(inc.shiftr(8)).write(inc)
+		out.endian	= origEndian
+		return out
+	}
+
 	** Returns a Mongo Shell compliant, JavaScript representation of the 'ObjectId'. Example:
 	** 
 	**   syntax: fantom
@@ -114,7 +118,7 @@ final const class ObjectId {
 	** 
 	** See [MongoDB Extended JSON]`https://docs.mongodb.com/manual/reference/mongodb-extended-json/#oid`.
 	Str toJs() {
-		"""ObjectId("${toHex}")"""
+		"ObjectId(${toHex.toCode})"
 	}
 
 	** Returns this 'ObjectId' as a 24 character hexadecimal string.
@@ -124,13 +128,11 @@ final const class ObjectId {
   
 	@NoDoc
 	override Bool equals(Obj? obj) {
-		objId := obj as ObjectId
-		if (objId 		== null)			return false
-		if (inc 		!= objId.inc)		return false
-		if (pid 		!= objId.pid)		return false
-		if (machine 	!= objId.machine)	return false
-		if (timestamp	!= objId.timestamp)	return false
+		that := obj as ObjectId
+		if (that	 == null)		return false
+		if (that.inc != this.inc)	return false
+		if (that.pid != this.pid)	return false
+		if (that.ts  != this.ts )	return false
 		return true
 	}
 }
-
