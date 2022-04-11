@@ -13,6 +13,7 @@
 ** 
 ** Note that Code objects have no JavaScript representation.
 @Serializable
+@Deprecated
 final const class Code {
 	
 	** JavaScript code.
