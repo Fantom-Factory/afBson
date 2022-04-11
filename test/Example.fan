@@ -3,8 +3,6 @@
 internal class Example {
 	
 	Void main() {
-		buf := Buf()
-
 		documentIn := [
 			"_id"	: ObjectId(),
 			"name"	: "Dave",
@@ -12,7 +10,7 @@ internal class Example {
 		]
 
 		// serialise BSON to a stream
-		BsonWriter(buf.out).writeDocument(documentIn)
+		buf := BsonWriter().writeDocument(documentIn)
 		
 		// deserialise BSOM from a stream
 		documentOut := BsonReader(buf.flip.in).readDocument

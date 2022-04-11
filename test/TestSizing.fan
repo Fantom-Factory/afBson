@@ -26,7 +26,7 @@ internal class TestSizing : BsonTest {
 	}
 	
 	private Void verifySize(Obj doc, Int size) {
-		buf := BsonBuf().writeDocument(doc).buf
+		buf := BsonWriter().writeDocument(doc)
 		
 		// verify no messages were logged during reading - for they indicate a size read failure		
 		BsonReader(buf.flip.in).readDocument

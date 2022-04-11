@@ -7,26 +7,24 @@ internal class TestSerialisation : BsonTest {
 	// test regex with (?:xui) options - see if flags are part of regex
 	
 	Void testBsonSerialisation() {
-		b := Buf()
-
-		BsonWriter(b.out).writeDocument(bsonValueMap)
-		doc := BsonReader(b.flip.in) { it.tz = TimeZone("New_York") }.readDocument
+		buf := BsonWriter().writeDocument(bsonValueMap)
+		doc := BsonReader(buf.flip.in) { it.tz = TimeZone("New_York") }.readDocument
 		
 		verifyBsonValueMap(doc)
 	}
 
 	Void testFantomSerialisation() {
-		b := Buf()
+		buf := Buf()
 
-		b.writeObj(bsonValueMap(true), ["indent":2])
-		doc := b.flip.readObj
+		buf.writeObj(bsonValueMap(true), ["indent":2])
+		doc := buf.flip.readObj
 		
 		verifyBsonValueMap(doc, true)
 	}
 	
 	Void testBadDocName() {
-		verifyErrMsg(ArgErr#, "BSON Document names must be 'Str', not : sys::Int - 666") {
-			BsonWriter(Buf().out).writeDocument([666:"ever"])
+		verifyErrMsg(ArgErr#, "BSON Document names must be Str, not sys::Int - 666") {
+			BsonWriter().writeDocument([666:"ever"])
 		}		
 	}
 	
@@ -44,8 +42,6 @@ internal class TestSerialisation : BsonTest {
 			"date"			: now,
 			"null"			: null,
 			"regex"			: "wotever".toRegex,
-			"code"			: Code("func() { ... }"),
-			"code_w_scope"	: Code("func() { ... }", ["wot":"ever"]),
 			"timestamp"		: Timestamp(6969, 69),
 			"int64"			: 666,
 			"minKey"		: MinKey.val,
@@ -73,10 +69,6 @@ internal class TestSerialisation : BsonTest {
 		verifyEq(doc["date"], 		now)
 		verifyEq(doc["null"], 		null)
 		verifyEq(doc["regex"], 		"wotever".toRegex)
-		verifyEq(doc["code"]->code,				"func() { ... }")
-		verifyEq(doc["code"]->scope->isEmpty,	true)
-		verifyEq(doc["code_w_scope"]->code,		"func() { ... }")
-		verifyEq(doc["code_w_scope"]->scope,	Str:Obj?["wot":"ever"])
 		verifyEq(doc["timestamp"],	Timestamp(6969, 69))
 		verifyEq(doc["int64"],		666)
 		verifyEq(doc["minKey"],		MinKey.val)
@@ -94,9 +86,8 @@ internal class TestSerialisation : BsonTest {
 	Void testQuirkyDateTimeFromJava() {
 		atEpoch := DateTime.fromJava(1) - 1ms
 		b4Epoch := DateTime.fromJava(1) - 1day
-		b := Buf()
-		BsonWriter(b.out).writeDocument(["at":atEpoch, "b4":b4Epoch])
-		doc := BsonReader(b.flip.in).readDocument
+		buf := BsonWriter().writeDocument(["at":atEpoch, "b4":b4Epoch])
+		doc := BsonReader(buf.flip.in).readDocument
 		
 		verifyEq(doc["at"], atEpoch)
 		verifyEq(doc["b4"], b4Epoch)

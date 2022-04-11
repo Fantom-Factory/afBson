@@ -110,14 +110,14 @@ enum class BsonType {
 
 	** Throws an 'ArgErr' if invalid.
 	static new fromValue(Int value, Bool checked := true) {
-		valueMap[value] ?: (checked ? throw ArgErr("Unknown BSON value ID: ${value}") : null)
+		valueMap[value] ?: (checked ? throw ArgErr("Unknown BSON value ID - ${value}") : null)
 	}
 	
 	** Throws an 'ArgErr' if invalid.
 	static new fromType(Type? type, Bool checked := true) {
 		type == null
 			? NULL
-			: (typeMap[type.toNonNullable] ?: (checked ? throw ArgErr("Unknown BSON type: ${type}") : null))
+			: (typeMap[type.toNonNullable] ?: (checked ? throw ArgErr("Unknown BSON type - ${type}") : null))
 	}
 	
 	** Determines a BSON type from the type of the given object.
@@ -147,7 +147,7 @@ enum class BsonType {
 		if (obj is Buf)		return BINARY
 		
 		if (checked)
-			throw ArgErr("Unknown BSON type: ${type.signature}")
+			throw ArgErr("Unknown BSON type - ${type.signature}")
 		return null
 	}
 	

@@ -1,6 +1,6 @@
 
 ** Writes documents of BSON values to a 'Buf'.
-class BsonBuf {
+class BsonWriter {
 	
 	Buf buf	{ private set }
 	
@@ -16,9 +16,9 @@ class BsonBuf {
 	}
 	
 	** Writes a BSON document.
-	This writeDocument(Obj:Obj? document) {
+	Buf writeDocument(Obj:Obj? document) {
 		_writeDocument(document)
-		return this
+		return buf
 	}	
 	
 	private Void _writeObject(Obj? obj) {
@@ -58,8 +58,8 @@ class BsonBuf {
 				// the pattern itself --> /(?i)case-insensitive/
 				// see Java's Pattern class for a list of supported flags --> dimsuxU
 				// see http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special
-				_writeCString(obj)	// --> pattern
-				_writeCString("")	// --> flags
+				_writeCString(obj.toStr)	// --> pattern
+				_writeCString("")			// --> flags
 
 			case BsonType.TIMESTAMP:
 				timestamp := (Timestamp) obj
