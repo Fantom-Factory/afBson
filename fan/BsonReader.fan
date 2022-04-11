@@ -18,7 +18,7 @@ class BsonReader {
 	}
 
 	** Creates a 'BsonReader', wrapping the given 'InSteam'.
-	** As per the BSON spec, the stream's endian is to 'little'.
+	** As per the BSON spec, the stream's endian is set to 'little'.
 	new make(InStream in) {
 		this.in = in
 		this.in.endian = Endian.little
@@ -34,6 +34,11 @@ class BsonReader {
 		_readCString(BsonBasicTypeReader(in))
 	}
 
+	** Reads a BSON Integer8 from the underlying 'InStream'.
+	Int readInteger8() {
+		_readInteger8(BsonBasicTypeReader(in))
+	}
+	
 	** Reads a BSON Integer32 from the underlying 'InStream'.
 	Int readInteger32() {
 		_readInteger32(BsonBasicTypeReader(in))
@@ -130,23 +135,23 @@ class BsonReader {
 					data := reader.readBinary(12)
 					log.warn(bsonReader_deprecatedType("DB_POINTER", name))
 
-				case BsonType.CODE:
-					code := reader.readString
-					val = Code(code)
+//				case BsonType.CODE:
+//					code := reader.readString
+//					val = Code(code)
 
 				case BsonType.SYMBOL:
 					symbol := reader.readString
 					log.warn(bsonReader_deprecatedType("SYMBOL", name))
 
-				case BsonType.CODE_W_SCOPE:
-					mark := reader.bytesRead
-					size := reader.readInteger32
-					code := reader.readString
-					scope := _readDocument(reader)
-					bytesRead := reader.bytesRead - mark
-					if (size != bytesRead)
-						log.warn(bsonReader_sizeMismatch("CODE_W_SCOPE", size - bytesRead))
-					val = Code(code, scope)
+//				case BsonType.CODE_W_SCOPE:
+//					mark := reader.bytesRead
+//					size := reader.readInteger32
+//					code := reader.readString
+//					scope := _readDocument(reader)
+//					bytesRead := reader.bytesRead - mark
+//					if (size != bytesRead)
+//						log.warn(bsonReader_sizeMismatch("CODE_W_SCOPE", size - bytesRead))
+//					val = Code(code, scope)
 
 				case BsonType.INTEGER_32:
 					val = reader.readInteger32
@@ -174,6 +179,10 @@ class BsonReader {
 	
 	private Str _readCString(BsonBasicTypeReader reader) {
 		reader.readCString
+	}
+	
+	private Int _readInteger8(BsonBasicTypeReader reader) {
+		reader.readInteger8
 	}
 	
 	private Int _readInteger32(BsonBasicTypeReader reader) {
@@ -248,6 +257,12 @@ internal class BsonBasicTypeReader {
 	Float readDouble() {
 		val := in.readF8
 		bytesRead += 8
+		return val
+	}
+
+	Int readInteger8() {
+		val := in.read
+		bytesRead += 1
 		return val
 	}
 
