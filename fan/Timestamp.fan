@@ -1,14 +1,11 @@
-using concurrent
+using concurrent::AtomicInt
 
 ** (BSON Type) - 
 ** Timestamps are used internally by MongoDB's replication. 
 ** You can see them in their natural habitat by querying 'local.main.$oplog'.
 @Serializable
 final const class Timestamp {
-	
 	private static const AtomicInt	counterRef 	:= AtomicInt(0)
-	private static const AtomicInt	lastNowRef 	:= AtomicInt(DateTime.now(1sec).toJava / 1000)
-	private static const TimestampSync sync		:= TimestampSync(ActorPool() { it.name=Timestamp#.qname; it.maxThreads=1; })
 	
 	** The number of seconds since the UNIX epoch.
 	const Int seconds
@@ -24,17 +21,12 @@ final const class Timestamp {
 	
 	** Returns a unique 'Timestamp' representing now.
 	static Timestamp now() {
-		// I was contemplating using "DateTime.nowUnique()" somehow,
-		// but you still run into race conditions requiring a sync block
-		sync.synchronized |->Timestamp| {
-			now := DateTime.now(1sec).toJava / 1000
-			inc := counterRef.incrementAndGet
-			if (lastNowRef.val != now) {
-				lastNowRef.val = now
-				counterRef.val = inc = 0
-			}
-			return Timestamp(now, inc)
-		}
+		now	:= Duration.nowTicks / 1sec.ticks
+		inc := counterRef.getAndIncrement
+		
+		// inc is supposed to reset for every unique now second
+		// but feck it - we don't create Timestamp values, only MongoDB does!
+		return Timestamp(now, inc)
 	}
 	
 	** For Fantom serialisation
