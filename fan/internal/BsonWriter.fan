@@ -1,21 +1,16 @@
 
-** Writes documents of BSON values to a 'Buf'.
-class BsonWriter {
+** Writes BSON documents to a Buf. 
+internal class BsonWriter {
 	
-	Buf buf	{ private set }
-	
+	private Buf buf
 	private OutStream	out
 	
-	** Creates a new BSON writer.
-	** 
-	** The wrapped 'Buf' is set to be little endian (as per BSON spec).
 	new make() {
 		this.buf		= Buf()
 		this.buf.endian	= Endian.little
 		this.out		= buf.out
 	}
 	
-	** Writes a BSON document.
 	Buf writeDocument(Obj:Obj? document) {
 		_writeDocument(document)
 		return buf

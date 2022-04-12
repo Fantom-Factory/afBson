@@ -9,11 +9,11 @@ internal class Example {
 			"age"	: "42"
 		]
 
-		// serialise BSON to a stream
-		buf := BsonWriter().writeDocument(documentIn)
+		// serialise BSON to a Buf
+		buf := BsonIO().writeDocument(documentIn)
 		
 		// deserialise BSOM from a stream
-		documentOut := BsonReader(buf.flip.in).readDocument
+		documentOut := BsonIO().readDocument(buf.flip.in)
 		
 		echo(documentOut)
 	}
