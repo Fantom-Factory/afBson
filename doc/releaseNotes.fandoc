@@ -1,7 +1,13 @@
-Versions
+Versions [#versions]
 ********
 
-v1.1.2
+v2.0.0 [#v2.0.0]
+======
+ - New: Complete re-write to incorporate the latest BSON specifications.
+ - Chg: Deprecated BSON objects (e.g. Code with Scope) are no longer supported.
+ - Chg: BSON document serialisation (via new 'BsonIO' class) has been **vastly** optimised.
+
+v1.1.2 [#v1.1.2]
 ======
  - New: 'BsonReader.tz' field to set the time zone in which 'DateTimes' are returned.
  - New: 'BsonType.fromType()'.
@@ -10,7 +16,7 @@ v1.1.2
  - Chg: Refactored out / removed some internal classes.
  - Chg: BSON types are now 'final' - for speedy checks by BsonType. *(Potential breaking change.)*
 
-v1.1.0
+v1.1.0 [#v1.1.0]
 ======
  - New: 'toJs()' methods for 'Binary', 'MinKey', 'MaxKey', 'ObjectId', & 'Timestamp'.
  - New: 'Timestamp.now()' returns a unique Timestamp.
@@ -19,13 +25,13 @@ v1.1.0
  - Chg: Changed 'Timestamp.seconds' from a 'Duration' to an 'Int'. *(Breaking change.)*
  - Chg: Better IP hash in 'ObjectId' for IP6 addresses.
 
-v1.0.0
+v1.0.0 [#v1.0.0]
 ======
  - New: Initial release.
  - New: 'BsonWriter' caches nested document sizes for increased performance.
  - Bug: Worked around the dodgy [DateTime.fromJava()]`http://fantom.org/sidewalk/topic/2267` quirks.
 
-v0.0.2
+v0.0.2 [#v0.0.2]
 ======
  - New: Preview release.
 
