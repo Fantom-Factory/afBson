@@ -24,6 +24,7 @@ final const class ObjectId {
 	// one cannot get the ProcessId in Java - http://fantom.org/sidewalk/topic/856
 	// Even the Java impl of ObjectId generates a random Int 
 	private static const Int 		thisPid		:= Int.random.and(0xFF_FF_FF_FF_FF)
+	private static const Int		epochOffset	:= DateTime.fromJava(1).ticks / 1sec.ticks
 	
 	** The creation timestamp with a 1 second accuracy.
 	const Int	ts
@@ -31,7 +32,7 @@ final const class ObjectId {
 	** A 5-byte process id that this instance was created under.
 	const Int 	pid
 	
-	** A 3-byte coutner value.
+	** A 3-byte counter value.
 	const Int 	inc
 	
 	@NoDoc
@@ -39,7 +40,7 @@ final const class ObjectId {
   
 	** Creates a new 'ObjectId'.
 	new make() {
-		this.ts		= Duration.nowTicks / 1sec.ticks
+		this.ts		= (DateTime.nowTicks / 1sec.ticks) - epochOffset
 		this.pid	= thisPid
 		this.inc	= counterRef.incrementAndGet.and(0xFF_FF_FF)
 		this.hash	= ts.shiftl(32) + pid.and(0xFF).shiftl(24) + inc
