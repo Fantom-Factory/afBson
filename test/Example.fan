@@ -10,10 +10,10 @@ internal class Example {
 		]
 
 		// serialise BSON to a Buf
-		buf := BsonIO().writeDocument(documentIn)
+		buf := BsonIO().writeDoc(documentIn)
 		
 		// deserialise BSOM from a stream
-		documentOut := BsonIO().readDocument(buf.flip.in)
+		documentOut := BsonIO().readDoc(buf.flip.in)
 		
 		echo(documentOut)
 	}

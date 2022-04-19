@@ -7,8 +7,8 @@ internal class TestSerialisation : BsonTest {
 	// test regex with (?:xui) options - see if flags are part of regex
 	
 	Void testBsonSerialisation() {
-		buf := BsonIO().writeDocument(bsonValueMap)
-		doc := BsonIO().readDocument(buf.flip.in, TimeZone("New_York"))
+		buf := BsonIO().writeDoc(bsonValueMap)
+		doc := BsonIO().readDoc(buf.flip.in, TimeZone("New_York"))
 		
 		verifyBsonValueMap(doc)
 	}
@@ -24,7 +24,7 @@ internal class TestSerialisation : BsonTest {
 	
 	Void testBadDocName() {
 		verifyErrMsg(ArgErr#, "BSON Document names must be Str, not sys::Int - 666") {
-			BsonIO().writeDocument((Obj) [666:"ever"])
+			BsonIO().writeDoc((Obj) [666:"ever"])
 		}		
 	}
 	
@@ -86,8 +86,8 @@ internal class TestSerialisation : BsonTest {
 	Void testQuirkyDateTimeFromJava() {
 		atEpoch := DateTime.fromJava(1) - 1ms
 		b4Epoch := DateTime.fromJava(1) - 1day
-		buf := BsonIO().writeDocument(["at":atEpoch, "b4":b4Epoch])
-		doc := BsonIO().readDocument(buf.flip.in)
+		buf := BsonIO().writeDoc(["at":atEpoch, "b4":b4Epoch])
+		doc := BsonIO().readDoc(buf.flip.in)
 		
 		verifyEq(doc["at"], atEpoch)
 		verifyEq(doc["b4"], b4Epoch)

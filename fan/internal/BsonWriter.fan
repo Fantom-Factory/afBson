@@ -5,10 +5,10 @@ internal class BsonWriter {
 	private Buf buf
 	private OutStream	out
 	
-	new make() {
-		this.buf		= Buf()
+	new make(Buf? buf) {
+		this.buf		= buf ?: Buf(1024)
 		this.buf.endian	= Endian.little
-		this.out		= buf.out
+		this.out		= this.buf.out
 	}
 	
 	Buf writeDocument(Obj:Obj? document) {
