@@ -35,10 +35,11 @@ class BsonIO {
 	**   syntax: fantom
 	**   str := BsonIO.print(doc, 20)
 	** 
-	Str print(Obj? val, Int maxWidth := 80, Str indent := "  ") {
+	** 'maxWidth' defaults to '80', and 'indent' to 2 spaces.
+	Str print(Obj? val, Int? maxWidth := null, Str? indent := null) {
 		BsonPrinter {
-			it.maxWidth	= maxWidth
-			it.indent 	= indent
+			it.maxWidth	= maxWidth	?: 80
+			it.indent 	= indent	?: "  "
 		}.print(val)
 	}
 }
