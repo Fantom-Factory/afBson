@@ -1,17 +1,17 @@
-# Bson v1.1.2
+# Bson v2.0.0
 ---
 
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](https://fantom-lang.org/)
-[![pod: v1.1.2](http://img.shields.io/badge/pod-v1.1.2-yellow.svg)](http://eggbox.fantomfactory.org/pods/afBson)
+[![pod: v2.0.0](http://img.shields.io/badge/pod-v2.0.0-yellow.svg)](http://eggbox.fantomfactory.org/pods/afBson)
 [![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)](https://choosealicense.com/licenses/isc/)
 
-## Overview
+## <a name="overview"></a>Overview
 
 Bson is an implementation of the [BSON specification](http://bsonspec.org/spec.html) complete with BSON serialisation and deserialisation.
 
 Note that BSON is an extention of JSON, and JSON can only represent a subset of the types supported by BSON.
 
-Bson was created to support the development of the Alien-Factory [MongoDB driver](http://eggbox.fantomfactory.org/pods/afMongo).
+Bson was created to support the development of the Fantom Factory [MongoDB driver](http://eggbox.fantomfactory.org/pods/afMongo).
 
 ## <a name="Install"></a>Install
 
@@ -25,13 +25,13 @@ Or install `Bson` with [fanr](https://fantom.org/doc/docFanr/Tool.html#install):
 
 To use in a [Fantom](https://fantom-lang.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afBson 1.1"]
+    depends = ["sys 1.0", ..., "afBson 2.0"]
 
 ## <a name="documentation"></a>Documentation
 
 Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org/pods/afBson/) - the Fantom Pod Repository.
 
-## Quick Start
+## <a name="quickStart"></a>Quick Start
 
 1). Create a text file called `Example.fan`:
 
@@ -40,21 +40,19 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
     class Example {
     
       Void main() {
-        buf := Buf()
-    
-        documentIn := [
+        docIn := [
           "_id"  : ObjectId(),
           "name" : "Dave",
           "age"  : 42
         ]
     
-        // serialise BSON to a stream
-        BsonWriter(buf.out).writeDocument(documentIn)
+        // serialise BSON to a Buf
+        buf := BsonIO().writeDoc(documentIn)
     
         // deserialise BSOM from a stream
-        documentOut := BsonReader(buf.flip.in).readDocument
+        docOut := BsonIO().readDoc(buf.flip.in)
     
-        echo(documentOut)
+        echo(docOut)
       }
     }
     
@@ -66,43 +64,46 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
     [_id:53503531a8000b8b44000001, name:Dave, age:42]
     
 
-## Usage
+## <a name="usage"></a>Usage
 
-The main [BsonReader](http://eggbox.fantomfactory.org/pods/afBson/api/BsonReader) and [BsonWriter](http://eggbox.fantomfactory.org/pods/afBson/api/BsonWriter) classes (de)serialise BSON objects to and from Fantom using the following mapping:
+The [BsonIO](http://eggbox.fantomfactory.org/pods/afBson/api/BsonIO) class (de)serialises BSON documents to and from Fantom using the following mapping:
 
-    -   Fantom           BSON       -
-    ---------------------------------
-    afBson::Binary    -> BINARY
-       sys::Bool      -> BOOLEAN
-    afBson::Code      -> CODE
-    afBson::Code      -> CODE_W_SCOPE
-       sys::DateTime  -> DATE
-       sys::Float     -> DOUBLE
-       sys::Int       -> INTEGER_64
-       sys::List      -> ARRAY
-       sys::Map       -> DOCUMENT
-    afBson::MaxKey    -> MAX_KEY
-    afBson::MinKey    -> MIN_KEY
-            null      -> NULL
-    afBson::ObjectId  -> OBJECT_ID
-       sys::Regex     -> REGEX
-       sys::Str       -> STRING
-    afBson::Timestamp -> TIMESTAMP
+    BSON       <->    Fantom
+    -------------------------------
+    ARRAY      <->    sys::List      
+    BINARY     <-> afBson::Binary    
+    BOOLEAN    <->    sys::Bool      
+    CODE       -->    sys::Str      (read only)  
+    DATE       <->    sys::DateTime  
+    DOCUMENT   <->    sys::Map       
+    DOUBLE     <->    sys::Float     
+    INTEGER_32 -->    sys::Int      (read only)
+    INTEGER_64 <->    sys::Int
+    MAX_KEY    <-> afBson::MaxKey    
+    MIN_KEY    <-> afBson::MinKey    
+    NULL       <->         null      
+    OBJECT_ID  <-> afBson::ObjectId  
+    REGEX      <->    sys::Regex     
+    STRING     <->    sys::Str       
+    TIMESTAMP  <-> afBson::Timestamp 
     
 
-Note that the deprecated BSON constructs `UNDEFINED`, `DB_POINTER` and `SYMBOL` are ignored and have no Fantom representation.
+`Bson` takes care of all the tricky `Endian`ness. All BSON objects may be serialised to and from strings using Fantom's standard serialisation techniques.
 
-`Bson` takes care of all the tricky `Endian`ness. All BSON objects (except for `Buf`) may be serialised to and from strings using Fantom's standard serialisation techniques.
+### <a name="implNotes"></a>Implementation Notes
 
-> **CAUTION:** `INTEGER_32` values will be read as [Int](https://fantom.org/doc/sys/Int.html) values. If you then write its containing document, the storage type will be converted to `INTEGER_64`.
+Deprecated BSON constructs (`CODE_W_SCOPE`, `DB_POINTER`, `SYMBOL`, and `UNDEFINED`) are ignored and have no Fantom representation.
+
+* `INTEGER_32` values are read as Fantom (64-bit) `Ints`
+* `CODE` objects are read as Fantom `Strs`
+* `REGEX` flags are read and converted into embedded character flags (e.g., `/myregex/im` is converted to `/(?im)myregex/`)
 
 
-This is only of concern if other, non Fantom, drivers have written `INTEGER_32` values to the database.
+If these objects are subsequently written back (to MongoDB), be aware that their backing storage type will change to represent their new Fantom type. This is only noteworthy if other, non Fantom, drivers are reading / writing values to / from the database.
 
-> **CAUTION:** Fantom does not support regex flags. When reading a BSON regex, flags are convered into embedded characted flags. e.g. `/myregex/im` is converted into `/(?im)myregex/`. See [Java's Pattern class](http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special) for a list of supported flags (dimsuxU).
+See [Java's Pattern Class](http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#special) for a list of supported regex flags (`dimsuxU`).
 
+## <a name="specialMention"></a>Special Mentions
 
-Again, this is only of concern if other, non Fantom, drivers have written `REGEX` values (with flags) to the database.
-
-The Alien-Factoy BSON library was inspired by [fantomongo](https://bitbucket.org/liamstask/fantomongo) by Liam Staskawicz.
+The Fantom Factoy BSON library was inspired by `fantomongo` by Liam Staskawicz.
 
