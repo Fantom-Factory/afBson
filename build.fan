@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBson"
 		summary = "A BSON specification implementation"
-		version = Version("2.0.0")
+		version = Version("2.0.1")
 
 		meta = [
 			"pod.dis"		: "Bson",
@@ -14,8 +14,8 @@ class Build : BuildPod {
 		]
 
 		depends = [
-			"sys        1.0.69 - 1.0",
-			"concurrent 1.0.69 - 1.0"	// for ObjectId & Timestamp
+			"sys        1.0.71 - 1.0",
+			"concurrent 1.0.71 - 1.0"	// for ObjectId & Timestamp
 		]
 
 		srcDirs = [`fan/`, `fan/internal/`, `test/`]
