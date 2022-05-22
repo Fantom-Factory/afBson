@@ -55,10 +55,21 @@ final const class Timestamp {
 	
 	@NoDoc
 	override Bool equals(Obj? obj) {
-		ts := obj as Timestamp
-		if (ts 			== null)			return false
-		if (seconds		!= ts.seconds)		return false
-		if (increment	!= ts.increment)	return false
+		that				:= obj as Timestamp
+		if (that 			== null)			return false
+		if (this.seconds	!= that.seconds)	return false
+		if (this.increment	!= that.increment)	return false
 		return true
+	}
+	
+	@NoDoc
+	override Int compare(Obj obj) {
+		that				:= (Timestamp) obj
+		if (this == that)	return 0
+		if (this.seconds	< that.seconds)		return -1
+		if (this.seconds	> that.seconds)		return  1
+		if (this.increment	< that.increment)	return -1
+		if (this.increment	> that.increment)	return  1
+												return  0
 	}
 }
