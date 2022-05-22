@@ -116,8 +116,8 @@ internal class BsonReader {
 					val = in.readS4
 
 				case BsonType.TIMESTAMP:
-					sec := in.readS4
 					inc := in.readS4
+					sec := in.readS4
 					val = Timestamp(sec, inc)
 
 				case BsonType.INTEGER_64:

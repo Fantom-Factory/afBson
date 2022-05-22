@@ -58,8 +58,8 @@ internal class BsonWriter {
 
 			case BsonType.TIMESTAMP:
 				timestamp := (Timestamp) obj
-				out.writeI4(timestamp.seconds)
 				out.writeI4(timestamp.increment)
+				out.writeI4(timestamp.seconds)
 
 			case BsonType.INTEGER_64:
 				out.writeI8(obj)

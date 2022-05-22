@@ -21,7 +21,7 @@ final const class Timestamp {
 	
 	** Returns a unique 'Timestamp' representing now.
 	static Timestamp now() {
-		now	:= Duration.nowTicks / 1sec.ticks
+		now	:= DateTime.now(1sec).toJava / 1000
 		inc := counterRef.getAndIncrement
 		
 		// inc is supposed to reset for every unique now second
