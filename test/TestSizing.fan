@@ -25,6 +25,13 @@ internal class TestSizing : BsonTest {
 		verifySize(["d3":["d2":["d1":["s":"wotever", "i":2]]]], 	58)
 	}
 	
+	Void testUtf8Strings() {
+		str := "users.each() (row) => do // 주어진 Grid에서 each row 읽기"
+		verifyEq(str.toBuf(Charset.utf8).size, 64)
+		verifyEq(BsonWriter.sizeUtf8(str), 64)
+		verifySize(["str":str], 15)
+	}
+	
 	private Void verifySize(Obj doc, Int size) {
 		buf := BsonIO().writeDoc(doc)
 		

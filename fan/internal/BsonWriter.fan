@@ -157,15 +157,14 @@ internal class BsonWriter {
 	}
 	
 	** Nicked from HttpClient
-	private static Int sizeUtf8(Str str) {
+	internal static Int sizeUtf8(Str str) {
 		size := 0
 		chars := str.chars
 		for (i := 0; i < chars.size; ++i) {
 			ch := chars[i]
 			if (ch < 0x0080)	size += 1; else
 			if (ch < 0x0800)	size += 2; else
-			if (ch < 0x8000)	size += 3; else
-			throw Err("Unsupported UTF-8 char: 0x${ch.toHex(4).upper}")
+								size += 3
 		}
 		return size
 	}
