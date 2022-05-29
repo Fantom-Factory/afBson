@@ -27,7 +27,7 @@ class Example {
     // serialise BSON to a Buf
     buf := BsonIO().writeDoc(documentIn)
 
-    // deserialise BSOM from a stream
+    // deserialise BSON from a stream
     docOut := BsonIO().readDoc(buf.flip.in)
 
     echo(docOut)
