@@ -1,6 +1,10 @@
 Versions [#versions]
 ********
 
+v2.0.4 [#v2.0.4]
+======
+ - Chg: Added workaround for non-UTF-8 characters in MongoDB err msgs. See issue  [SERVER-50454]`https://jira.mongodb.org/browse/SERVER-50454` for details.
+
 v2.0.2 [#v2.0.2]
 ======
  - New: 'Timestamp' now overrides 'compare()' for '<=>' comparison usage.

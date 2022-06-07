@@ -144,11 +144,33 @@ internal class BsonReader {
 	private Str _readString() {
 		size := in.readS4 - 1
 		// readBufFully() 'cos size is the no. of *bytes*, not chars
-		str  := in.readBufFully(null, size).readAllStr(false)
-		nul := in.readU1
-		if (nul != 0)
-			log.warn(bsonReader_nullTerminatorNotZero(nul, str))
-		return str
+		buf  := in.readBufFully(null, size)
+		try {
+			nul := in.readU1
+			if (nul != 0)
+				log.warn(bsonReader_nullTerminatorNotZero(nul))
+			// read the str *after* reading the null, in case of UTF-8 errors - see below
+			return buf.readAllStr(false)
+
+		} catch (IOErr err) {
+			// Some MongoDB err msgs DO contain invalid UTF8! (fixed in MongoDB 5.1)
+			// so just recover what info we can as ASCII
+			// https://jira.mongodb.org/browse/SERVER-50454
+			if (err.msg == "Invalid UTF-8 encoding") {
+				buf.seek(0)
+				str := StrBuf()
+				for (i := 0; i < buf.size; ++i) {
+					chr := buf.read
+					if (chr >= 32 && chr <= 126)	// >= ' ' && <= '~' 
+						str.addChar(chr)
+					else
+						str.addChar('*')
+				}
+				return str.toStr
+			}
+
+			throw err
+		}
 	}
 
 
@@ -169,7 +191,7 @@ internal class BsonReader {
 		"Converted BSON Regex flag(s) '${flags}' to embedded chars: /${oldRegex}/${flags} --> /${newRegex}/"
 	}
 
-	private static Str bsonReader_nullTerminatorNotZero(Int terminator, Str str) {
-		"BSON string terminator was not zero, but '0x${terminator.toHex}' for string : ${str}"
+	private static Str bsonReader_nullTerminatorNotZero(Int terminator) {
+		"BSON string terminator was not zero, but '0x${terminator.toHex}'"
 	}
 }
