@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBson"
 		summary = "A BSON specification implementation"
-		version = Version("2.0.3")
+		version = Version("2.0.4")
 
 		meta = [
 			"pod.dis"		: "Bson",
